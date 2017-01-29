@@ -1,0 +1,13 @@
+config/.java/
+config/copy_reference_file.log
+config/logs/
+config/war
+config/cache
+config/updates/
+config/userContent
+config/tools
+config/jobs/*/builds
+config/jobs/*/builds/*/archive
+config/jobs/*/builds/workspace
+config/plugins/*
+!config/plugins/*.jpi
