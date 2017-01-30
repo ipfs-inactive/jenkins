@@ -11,7 +11,7 @@ You can get an overview of our progress at https://waffle.io/ipfs/jenkins
 
 * Docker
 
-### Intructions
+### Instructions
 
 * Clone repository
 * Run `./start-dev.sh`
