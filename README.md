@@ -15,7 +15,7 @@ You can get an overview of our progress at https://waffle.io/ipfs/jenkins
 
 * Clone repository
 * Run `./start-dev.sh`
-* Now jenkins should be running at http://localhost:8080
+* Now jenkins should be running at http://localhost:8090
 
 ```
 username: admin
