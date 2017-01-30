@@ -5,6 +5,24 @@
 
 You can follow along with the issues listed over at https://github.com/ipfs/jenkins/issues
 
+## Development Environment Setup
+
+### Requirements
+
+* Docker
+
+### Intructions
+
+* Clone repository
+* Run `./start-dev.sh`
+* Now jenkins should be running at http://localhost:8080
+
+```
+username: admin
+password: admin
+```
+
+
 ## Notes
 
 Secrets are only valid for dev-environment. Make sure to only run jenkins in dev
