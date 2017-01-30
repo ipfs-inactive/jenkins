@@ -1,3 +1,4 @@
+*.bak
 config/.java/
 config/copy_reference_file.log
 config/logs/
@@ -6,9 +7,13 @@ config/cache
 config/updates/
 config/userContent
 config/tools
+config/jenkins.model.DownloadSettings.xml
+config/jenkins.security.QueueItemAuthenticatorConfiguration.xml
+config/org.jenkinsci.plugins.workflow.flow.FlowExecutionList.xml
 config/queue.xml
 config/jobs/*/builds
-config/jobs/*/builds/*/archive
-config/jobs/*/builds/workspace
+config/jobs/*/lastStable
+config/jobs/*/lastSuccessful
+config/jobs/*/nextBuildNumber
 config/plugins/*
 !config/plugins/*.jpi
