@@ -17,3 +17,4 @@ config/jobs/*/lastSuccessful
 config/jobs/*/nextBuildNumber
 config/plugins/*
 !config/plugins/*.jpi
+config/jenkins.security.RekeySecretAdminMonitor/needed
