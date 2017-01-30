@@ -3,7 +3,7 @@
 
 ## WIP: In the process of being setup
 
-You can follow along with the issues listed over at https://github.com/ipfs/jenkins/issues
+You can get an overview of our progress at https://waffle.io/ipfs/jenkins
 
 ## Development Environment Setup
 
