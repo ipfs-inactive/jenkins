@@ -6,6 +6,7 @@ config/cache
 config/updates/
 config/userContent
 config/tools
+config/queue.xml
 config/jobs/*/builds
 config/jobs/*/builds/*/archive
 config/jobs/*/builds/workspace
