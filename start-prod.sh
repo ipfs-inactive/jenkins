@@ -22,6 +22,8 @@ else
 	git fetch
 	git checkout $VERSION
 	# TODO changes to config would happen here, decrypting secrets and such
+	# for now, just clean out all the users
+	rm -r config/users/*
 fi
 
 # Image deploy
