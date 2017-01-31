@@ -35,5 +35,10 @@ else
 	echo "Different image currently running, deploying new image"
 	docker stop jenkins || true
 	docker rm jenkins || true
-	docker run -d --name jenkins -p 80:8080 -v $(pwd)/config $IMAGE_TO_DEPLOY
+	docker run -d \
+		--name jenkins \
+		-p 80:8080 \
+		-v $(pwd)/config:/var/jenkins_home \
+		--env JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
+		$IMAGE_TO_DEPLOY
 fi
