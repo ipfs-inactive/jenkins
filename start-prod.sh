@@ -23,7 +23,7 @@ else
 	git checkout $VERSION
 	# TODO changes to config would happen here, decrypting secrets and such
 	# for now, just clean out all the users
-	rm -r config/users/*
+	rm -r config/users/* || true
 fi
 
 # Image deploy
