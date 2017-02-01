@@ -37,7 +37,7 @@ else
 	docker rm jenkins || true
 	docker run -d \
 		--name jenkins \
-		-p 80:8080 \
+		-p 8090:8080 \
 		-v $(pwd)/config:/var/jenkins_home \
 		--env JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
 		$IMAGE_TO_DEPLOY
