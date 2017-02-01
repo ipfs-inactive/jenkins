@@ -25,7 +25,7 @@ password: admin
 ## Production Deploy
 
 - Run `./build-prod.sh` on machine with access to our Quay registry
-- Run `./provsn exec jenkins '/path/to/start-prod.sh $VERSION'` from ipfs/infrastructure
+- Run `./provsn exec jenkins "runuser -l jenkins -c 'cd jenkins/ && ./start-prod.sh $VERSION'"` from ipfs/infrastructure
 	replace $VERSION with which commit you want to deploy
 
 ### Setting up new host
