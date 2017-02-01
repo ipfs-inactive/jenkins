@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.9">
+  <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
@@ -24,13 +25,13 @@
     <script>node {
     stage(&quot;Prepare&quot;) {
         sh &quot;echo hello &gt; file&quot;
-        sh &quot;echo &apos;FROM busybox\nCOPY hello /hello&apos; &gt; file&quot;
+        sh &quot;echo &apos;FROM busybox\nCOPY file /hello&apos; &gt; Dockerfile&quot;
     }
     stage(&quot;Build&quot;) {
-        sh &quot;docker build -t . ipfs/dind-test&quot;
+        sh &quot;docker build -t ipfs/dind-test .&quot;
     }
     stage(&quot;Test&quot;) {
-        sh &quot;docker run -it ipfs/dind-test cat /hello&quot;
+        sh &quot;docker run ipfs/dind-test cat /hello&quot;
     }
 }</script>
     <sandbox>true</sandbox>
