@@ -17,7 +17,7 @@
         <net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterDefinition plugin="git-parameter@0.7.2">
           <name>BranchOrTag</name>
           <description></description>
-          <uuid>ba8e19f3-7961-4114-a190-2e2ec1c43a7e</uuid>
+          <uuid>d254c274-f4d2-402a-b1e4-957ea37390e6</uuid>
           <type>PT_BRANCH_TAG</type>
           <branch>feat/makefile/refactor</branch>
           <tagFilter>*</tagFilter>
@@ -47,7 +47,6 @@
       <configVersion>2</configVersion>
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
-          <refspec>feat/makefile/refactor</refspec>
           <url>https://github.com/ipfs/go-ipfs/</url>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
