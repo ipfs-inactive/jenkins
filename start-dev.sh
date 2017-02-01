@@ -5,5 +5,6 @@ docker build -t ipfs/jenkins:latest .
 # TODO allow people to change path to socket
 docker run -p 8090:8080 \
 	-v /var/run/docker.sock:/var/run/docker.sock \
+	--group-add "$(getent group docker | cut -d':' -f 3)" \
 	-v $(pwd)/config:/var/jenkins_home \
 	ipfs/jenkins:latest
