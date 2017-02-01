@@ -10,11 +10,13 @@ config/tools
 config/jenkins.model.DownloadSettings.xml
 config/jenkins.security.QueueItemAuthenticatorConfiguration.xml
 config/org.jenkinsci.plugins.workflow.flow.FlowExecutionList.xml
+config/secrets/hudson.model.Job.serverCookie
 config/queue.xml
 config/jobs/*/builds
 config/jobs/*/lastStable
 config/jobs/*/lastSuccessful
 config/jobs/*/nextBuildNumber
+config/workspace/*
 config/plugins/*
 !config/plugins/*.jpi
 config/jenkins.security.RekeySecretAdminMonitor/needed
