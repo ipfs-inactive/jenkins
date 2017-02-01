@@ -22,6 +22,20 @@ username: admin
 password: admin
 ```
 
+## Production Deploy
+
+- Run `./build-prod.sh` on machine with access to our Quay registry
+- Run `./provsn exec jenkins '/path/to/start-prod.sh $VERSION'` from ipfs/infrastructure
+	replace $VERSION with which commit you want to deploy
+
+### Setting up new host
+
+New hosts need:
+
+- Docker installed
+- Docker Login generated for Quay read-only access
+- User `jenkins` on host for file permissions in running container
+- Initial clone of ipfs/jenkins to home directory of jenkins user
 
 ## Notes
 
