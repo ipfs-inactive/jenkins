@@ -21,10 +21,12 @@ else
 	echo "Updating config"
 	git fetch
 	git checkout $VERSION
-	# TODO changes to config would happen here, decrypting secrets and such
-	# for now, just clean out all the users
-	rm -r config/users/* || true
 fi
+rm -r config/users/* || true
+git submodule init
+git submodule update
+(cd jenkins-secrets && ./decrypt.sh)
+git apply jenkins-secrets/plain_config_production.patch
 
 # Image deploy
 IMAGE_TO_DEPLOY="$IMAGE:$VERSION"
@@ -40,6 +42,8 @@ else
 		--restart=always \
 		-p 127.0.0.1:8090:8080 \
 		-v $(pwd)/config:/var/jenkins_home \
+		--group-add "$(getent group docker | cut -d':' -f 3)" \
+		-v /var/run/docker.sock:/var/run/docker.sock \
 		--env JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
 		$IMAGE_TO_DEPLOY
 fi

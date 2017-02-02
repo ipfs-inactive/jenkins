@@ -41,3 +41,6 @@ New hosts need:
 
 Secrets are only valid for dev-environment. Make sure to only run jenkins in dev
 listening to 127.0.0.1 and not 0.0.0.0. Secrets are replaced when jenkins is deployed
+
+When running in production, `start-prod.sh` require access to protocol/jenkins-secrets
+to be able to decrypt and apply production patch.
