@@ -25,7 +25,6 @@ fi
 rm -r config/users/* || true
 git submodule init
 git submodule update
-cp config/config.tmpl.xml config/config.xml
 (cd jenkins-secrets && ./decrypt.sh)
 git apply jenkins-secrets/plain_config_production.patch
 
