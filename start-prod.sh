@@ -27,8 +27,7 @@ git submodule init
 git submodule update
 cp config/config.tmpl.xml config/config.xml
 (cd jenkins-secrets && ./decrypt.sh)
-./replace-var-in-config.sh authorizationStrategy jenkins-secrets/decrypted_authorizationStrategy.xml
-./replace-var-in-config.sh securityRealm jenkins-secrets/decrypted_securityRealm.xml
+git apply jenkins-secrets/plain_config_production.patch
 
 # Image deploy
 IMAGE_TO_DEPLOY="$IMAGE:$VERSION"
