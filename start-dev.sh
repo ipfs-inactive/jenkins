@@ -1,11 +1,5 @@
 #! /bin/bash
 
-# Set config as dev-config
-echo "Setting dev-config"
-cp config/config.tmpl.xml config/config.xml
-./replace-var-in-config.sh authorizationStrategy dev-configs/authorizationStrategy.xml
-./replace-var-in-config.sh securityRealm dev-configs/securityRealm.xml
-
 docker build -t ipfs/jenkins:latest .
 # TODO detect if /var/run/docker.sock exists and errors if it doesn't
 # TODO allow people to change path to socket
