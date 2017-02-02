@@ -4,6 +4,9 @@ set -e
 
 IMAGE_NAME="quay.io/ipfs/jenkins"
 
+# Making sure jenkins-secrets are not included in the image
+git submodule deinit .
+
 if [[ -n $(git status --porcelain) ]]; then
 	echo "Repository is dirty, please reset or commit your changes"
 	exit 1
