@@ -21,9 +21,13 @@ else
 	echo "Updating config"
 	git fetch
 	git checkout $VERSION
-	# TODO changes to config would happen here, decrypting secrets and such
-	# for now, just clean out all the users
 	rm -r config/users/* || true
+	git submodule init
+	git submodule update
+	cp config/config.tmpl.xml config/config.xml
+	(cd jenkins-secrets && ./decrypt.sh)
+	./replace-var-in-config.sh authorizationStrategy jenkins-secrets/decrypted_authorizationStrategy.xml
+	./replace-var-in-config.sh securityRealm jenkins-secrets/decrypted_securityRealm.xml
 fi
 
 # Image deploy
