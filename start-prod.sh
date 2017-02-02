@@ -21,14 +21,14 @@ else
 	echo "Updating config"
 	git fetch
 	git checkout $VERSION
-	rm -r config/users/* || true
-	git submodule init
-	git submodule update
-	cp config/config.tmpl.xml config/config.xml
-	(cd jenkins-secrets && ./decrypt.sh)
-	./replace-var-in-config.sh authorizationStrategy jenkins-secrets/decrypted_authorizationStrategy.xml
-	./replace-var-in-config.sh securityRealm jenkins-secrets/decrypted_securityRealm.xml
 fi
+rm -r config/users/* || true
+git submodule init
+git submodule update
+cp config/config.tmpl.xml config/config.xml
+(cd jenkins-secrets && ./decrypt.sh)
+./replace-var-in-config.sh authorizationStrategy jenkins-secrets/decrypted_authorizationStrategy.xml
+./replace-var-in-config.sh securityRealm jenkins-secrets/decrypted_securityRealm.xml
 
 # Image deploy
 IMAGE_TO_DEPLOY="$IMAGE:$VERSION"
