@@ -1,4 +1,0 @@
-<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
-	<disableSignup>true</disableSignup>
-	<enableCaptcha>false</enableCaptcha>
-</securityRealm>

@@ -21,6 +21,5 @@ config/plugins/*
 config/workspace/*
 !config/plugins/*.jpi
 config/jenkins.security.RekeySecretAdminMonitor/needed
-config/config.xml
 config/.cache
 config/.owner
