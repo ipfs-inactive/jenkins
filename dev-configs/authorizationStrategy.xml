@@ -1,0 +1,3 @@
+<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+	<denyAnonymousReadAccess>false</denyAnonymousReadAccess>
+</authorizationStrategy>

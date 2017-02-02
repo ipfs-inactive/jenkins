@@ -41,3 +41,11 @@ New hosts need:
 
 Secrets are only valid for dev-environment. Make sure to only run jenkins in dev
 listening to 127.0.0.1 and not 0.0.0.0. Secrets are replaced when jenkins is deployed
+
+`config/config.xml` is generated when you run either `start-prod.sh` or `start-dev.sh`
+
+In `start-dev.sh`, config/config.xml is generated from merging `config/config.tmpl.xml`
+with .xmls from `dev-configs/`
+
+In `start-prod.sh`, config/config.xml is generated from merging `config/config.tmpl.xml`
+with .xmls matching `decrypted_*` from `jenkins-secrets/`.
