@@ -59,7 +59,7 @@
       <submoduleCfg class="list"/>
       <extensions/>
     </scm>
-    <scriptPath>Jenkinsfile</scriptPath>
+    <scriptPath>ci/Jenkinsfile</scriptPath>
   </definition>
   <triggers/>
 </flow-definition>
