@@ -1,65 +1,63 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<flow-definition plugin="workflow-job@2.9">
+<org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject plugin="pipeline-multibranch-defaults@1.1">
   <actions/>
   <description></description>
-  <keepDependencies>false</keepDependencies>
   <properties>
-    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.25.1">
-      <projectUrl>https://github.com/ipfs/go-ipfs/</projectUrl>
-      <displayName></displayName>
-    </com.coravy.hudson.plugins.github.GithubProjectProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.25">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterDefinition plugin="git-parameter@0.7.2">
-          <name>BranchOrTag</name>
-          <description></description>
-          <uuid>d254c274-f4d2-402a-b1e4-957ea37390e6</uuid>
-          <type>PT_BRANCH_TAG</type>
-          <branch>feat/makefile/refactor</branch>
-          <tagFilter>*</tagFilter>
-          <branchFilter>.*</branchFilter>
-          <sortMode>NONE</sortMode>
-          <defaultValue></defaultValue>
-          <selectedValue>NONE</selectedValue>
-          <quickFilterEnabled>false</quickFilterEnabled>
-        </net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@1.9.0">
-      <maxConcurrentPerNode>0</maxConcurrentPerNode>
-      <maxConcurrentTotal>0</maxConcurrentTotal>
-      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
-      <throttleEnabled>false</throttleEnabled>
-      <throttleOption>project</throttleOption>
-      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
-      <paramsToUseForLimit></paramsToUseForLimit>
-    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
-    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
-      <triggers/>
-    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig plugin="pipeline-model-definition@1.0">
+      <dockerLabel></dockerLabel>
+      <registry plugin="docker-commons@1.6"/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.config.FolderConfig>
   </properties>
-  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.24">
-    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
-      <configVersion>2</configVersion>
-      <userRemoteConfigs>
-        <hudson.plugins.git.UserRemoteConfig>
-          <url>https://github.com/ipfs/go-ipfs/</url>
-        </hudson.plugins.git.UserRemoteConfig>
-      </userRemoteConfigs>
-      <branches>
-        <hudson.plugins.git.BranchSpec>
-          <name>${BranchOrTag}</name>
-        </hudson.plugins.git.BranchSpec>
-      </branches>
-      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-      <submoduleCfg class="list"/>
-      <extensions/>
-    </scm>
-    <scriptPath>Jenkinsfile</scriptPath>
-  </definition>
+  <folderViews class="com.cloudbees.hudson.plugins.folder.views.DefaultFolderViewHolder" plugin="cloudbees-folder@5.16">
+    <views>
+      <hudson.model.AllView>
+        <owner class="org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject" reference="../../../.."/>
+        <name>All</name>
+        <filterExecutors>false</filterExecutors>
+        <filterQueue>false</filterQueue>
+        <properties class="hudson.model.View$PropertyList"/>
+      </hudson.model.AllView>
+    </views>
+    <tabBar class="hudson.views.DefaultViewsTabBar"/>
+  </folderViews>
+  <healthMetrics>
+    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@5.16">
+      <nonRecursive>false</nonRecursive>
+    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+  </healthMetrics>
+  <icon class="com.cloudbees.hudson.plugins.folder.icons.StockFolderIcon" plugin="cloudbees-folder@5.16"/>
+  <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@5.16">
+    <pruneDeadBranches>true</pruneDeadBranches>
+    <daysToKeep>0</daysToKeep>
+    <numToKeep>0</numToKeep>
+  </orphanedItemStrategy>
   <triggers/>
-</flow-definition>
+  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@1.11.1">
+    <data>
+      <jenkins.branch.BranchSource>
+        <source class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@1.10.1">
+          <id>378c679a-8d9b-443f-9055-8d15f706c28a</id>
+          <checkoutCredentialsId>SAME</checkoutCredentialsId>
+          <scanCredentialsId>50becd95-98d7-4d2c-b1c6-1556c6441960</scanCredentialsId>
+          <repoOwner>ipfs</repoOwner>
+          <repository>go-ipfs</repository>
+          <includes>*</includes>
+          <excludes></excludes>
+          <buildOriginBranch>true</buildOriginBranch>
+          <buildOriginBranchWithPR>true</buildOriginBranchWithPR>
+          <buildOriginPRMerge>false</buildOriginPRMerge>
+          <buildOriginPRHead>false</buildOriginPRHead>
+          <buildForkPRMerge>true</buildForkPRMerge>
+          <buildForkPRHead>false</buildForkPRHead>
+        </source>
+        <strategy class="jenkins.branch.DefaultBranchPropertyStrategy">
+          <properties class="empty-list"/>
+        </strategy>
+      </jenkins.branch.BranchSource>
+    </data>
+    <owner class="org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject" reference="../.."/>
+  </sources>
+  <factory class="org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineBranchDefaultsProjectFactory">
+    <owner class="org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject" reference="../.."/>
+  </factory>
+</org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject>

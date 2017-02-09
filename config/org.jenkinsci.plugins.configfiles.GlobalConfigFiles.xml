@@ -18,6 +18,78 @@ node {
       <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
     </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
     <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+      <id>go-ipfs-jenkinsfile</id>
+      <name>go-ipfs-jenkinsfile</name>
+      <comment>Pipeline for go-ipfs task</comment>
+      <content>#!groovy
+
+def VERSION = &quot;latest&quot;
+def IMAGE = &quot;quay.io/ipfs/go-ipfs:$VERSION&quot;
+def image = docker.image(IMAGE)
+
+@NonCPS
+def runArgs() {
+	def pass = [&quot;JENKINS_URL&quot;, &quot;ghprbSourceBranch&quot;, &quot;GIT_BRANCH&quot;, &quot;ghprbActualCommit&quot;,
+	&quot;TERM&quot;, &quot;GIT_COMMIT&quot;, &quot;BUILD_NUMBER&quot;, &quot;ghprbPullId&quot;, &quot;BUILD_URL&quot;]
+	def override = [color: &quot;t&quot;, TEST_NO_FUSE: &quot;1&quot;, TEST_VERBOSE: &quot;1&quot;]
+	def newEnv = [:]
+	pass.each {c -&gt; newEnv[c] = env[c] ?: &quot;&quot;}
+	newEnv.putAll(override)
+	return newEnv.collect  { k, v -&gt; &quot;-e \&quot;$k=$v\&quot;&quot; }.join(&quot; &quot;)
+}
+
+stage(&quot;Build Container&quot;) {
+  node {
+	checkout scm
+	VERSION = sh(returnStdout: true, script: &quot;git rev-parse HEAD&quot;).trim()
+	IMAGE = &quot;quay.io/ipfs/go-ipfs:$VERSION&quot;
+	image = docker.image(IMAGE)
+
+	docker.build(IMAGE, &quot;-f ci/Dockerfile.buildenv .&quot;)
+  }
+}
+
+def dexec = &quot;docker exec&quot;
+
+stage(&quot;Checks&quot;) {
+	parallel(
+		&apos;go fmt&apos;: { node {
+			image.withRun runArgs(), { c -&gt;
+				sh &quot;$dexec ${c.id} make test_go_fmt&quot;
+			}
+		}},
+		&apos;go build&apos;: { node {
+			// due to bug in Jenkins (JENKINS-38268) names of closure params have to be different
+			image.withRun runArgs(), { c1 -&gt;
+				sh &quot;$dexec ${c1.id} make cmd/ipfs/ipfs&quot;
+				sh &quot;$dexec ${c1.id} sh -xc &apos;cp cmd/ipfs/ipfs cmd/ipfs/dist; cd cmd/ipfs/dist; tar -czvf ../go-ipfs_linux-amd64.tar.gz .&apos;&quot;
+				sh &quot;docker cp ${c1.id}:/go/src/github.com/ipfs/go-ipfs/cmd/ipfs/go-ipfs_linux-amd64.tar.gz go-ipfs_linux-amd64-${env.BUILD_NUMBER}.tar.gz&quot;
+				archiveArtifacts artifacts: &quot;go-ipfs_linux-amd64-${env.BUILD_NUMBER}.tar.gz&quot;, fingerprint: true
+			}
+		}}
+	)
+}
+
+stage(&quot;Tests &amp; Coverage&quot;) {
+	parallel(
+		&apos;sharness&apos;: { node {
+			image.withRun runArgs(), { c -&gt;
+				sh &quot;$dexec ${c.id} make -j2 -Otarget coverage/sharness_tests.coverprofile&quot;
+				sh &quot;$dexec ${c.id} codecov -cF sharness -X search -f coverage/sharness_tests.coverprofile&quot;
+			}
+		}},
+		&apos;go test&apos;: { node {
+			image.withRun runArgs(), { c1 -&gt;
+				sh &quot;$dexec ${c1.id} make -j2 -Otarget coverage/unit_tests.coverprofile&quot;
+				sh &quot;$dexec ${c1.id} codecov -cF sharness -X search -f coverage/unit_tests.coverprofile&quot;
+			}
+		}}
+	)
+}
+</content>
+      <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
+    </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+    <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
       <id>javascript</id>
       <name>javascript</name>
       <comment>Pipeline for JavaScript projects</comment>
