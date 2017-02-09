@@ -38,6 +38,8 @@ def runArgs() {
 	return newEnv.collect  { k, v -&gt; &quot;-e \&quot;$k=$v\&quot;&quot; }.join(&quot; &quot;)
 }
 
+ansiColor(&apos;xterm&apos;) {
+withEnv([&quot;TERM=xterm-color&quot;]){
 stage(&quot;Build Container&quot;) {
   node {
 	checkout scm
@@ -85,7 +87,7 @@ stage(&quot;Tests &amp; Coverage&quot;) {
 			}
 		}}
 	)
-}
+}}}
 </content>
       <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
     </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
