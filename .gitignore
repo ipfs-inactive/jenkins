@@ -16,6 +16,8 @@ config/jobs/*/builds
 config/jobs/*/lastStable
 config/jobs/*/lastSuccessful
 config/jobs/*/nextBuildNumber
+config/jobs/*/branches
+config/jobs/*/indexing
 config/workspace/*
 config/plugins/*
 config/workspace/*

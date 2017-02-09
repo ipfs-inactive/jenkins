@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jenkinsci.plugins.configfiles.GlobalConfigFiles plugin="config-file-provider@2.15.5">
+  <configs class="sorted-set">
+    <comparator class="org.jenkinsci.plugins.configfiles.GlobalConfigFiles$1"/>
+    <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+      <id>Jenkinsfile</id>
+      <name>Jenkinsfile</name>
+      <comment>Jenkinsfile</comment>
+      <content>#!groovy
+
+node {
+    checkout scm
+    def pipeline = sh(returnStdout: true, script: &quot;cat ci/jenkins&quot;).trim()
+    configFileProvider([configFile(fileId: pipeline, variable: &apos;foundPipeline&apos;)]) {
+        load &quot;$foundPipeline&quot;
+    }
+}</content>
+      <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
+    </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+    <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+      <id>javascript</id>
+      <name>javascript</name>
+      <comment>Pipeline for JavaScript projects</comment>
+      <content>ansiColor(&apos;xterm&apos;) {
+	def VERSION = &quot;latest&quot;
+	def IMAGE_NAME = env.JOB_NAME.split(/\//)[0]
+	stage(&quot;Checkout&quot;) {
+		VERSION = sh(returnStdout: true, script: &quot;git rev-parse HEAD&quot;).trim()
+	}
+	
+	stage(&quot;Build&quot;) {
+		sh &quot;docker build -f ci/Dockerfile -t quay.io/ipfs/$IMAGE_NAME:$VERSION .&quot;
+	}
+	stage(&quot;Tests&quot;) {
+		parallel nodejs: {
+			node {
+				sh &quot;docker run quay.io/ipfs/$IMAGE_NAME:$VERSION npm run test:node&quot;
+			}
+		},
+		browser: {
+			node {
+				sh &quot;docker run --privileged quay.io/ipfs/$IMAGE_NAME:$VERSION npm run test:browser&quot;
+			}
+		}
+	}
+}
+</content>
+      <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
+    </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
+  </configs>
+</org.jenkinsci.plugins.configfiles.GlobalConfigFiles>
