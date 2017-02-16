@@ -41,7 +41,8 @@ New hosts need:
 
 ### Worker setup
 
-Clone this repository to the worker and run `./worker/setup.sh`
+Clone this repository to the worker and run `./worker/{debian,osx}-setup.sh`,
+depending on what OS your worker is using.
 
 ### Connecting to jenkins
 
