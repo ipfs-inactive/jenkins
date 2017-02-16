@@ -37,6 +37,20 @@ New hosts need:
 - User `jenkins` on host for file permissions in running container
 - Initial clone of ipfs/jenkins to home directory of jenkins user
 
+## Setting up new worker
+
+### Worker setup
+
+Clone this repository to the worker and run `./worker/setup.sh`
+
+### Connecting to jenkins
+
+Create a new entry by copying to already existing `config/nodes/linux-01` to
+a new directory, replacing the values in `config.xml` of the node.
+
+Once created, submit the changes and make a deploy of new jenkins. Once it's
+deployed, jenkins should automatically start the worker on your node.
+
 ## Notes
 
 Secrets are only valid for dev-environment. Make sure to only run jenkins in dev
