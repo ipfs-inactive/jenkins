@@ -44,6 +44,7 @@ else
 		--restart=always \
 		-p 127.0.0.1:8090:8080 \
 		-v $(pwd)/config:/var/jenkins_home \
+		-v $(pwd)/jenkins-secrets:/home/jenkins/secrets \
 		--group-add "$(getent group docker | cut -d':' -f 3)" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		--env JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
