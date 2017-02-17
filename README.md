@@ -44,6 +44,10 @@ New hosts need:
 Clone this repository to the worker and run `./worker/{debian,osx}-setup.sh`,
 depending on what OS your worker is using.
 
+Also, once docker is installed, make sure you login to Quay so images can be
+pushed to quay. You can find the details about this by clicking on the "ipfs+deployer"
+robot account over here: https://quay.io/organization/ipfs?tab=robots
+
 ### Connecting to jenkins
 
 Create a new entry by copying to already existing `config/nodes/linux-01` to
