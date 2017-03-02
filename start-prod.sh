@@ -15,7 +15,6 @@ IMAGE="quay.io/ipfs/jenkins"
 
 echo "Updating config"
 git reset --hard
-git clean -f
 git checkout master
 git pull origin master
 git checkout $VERSION
