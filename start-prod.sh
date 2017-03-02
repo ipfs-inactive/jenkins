@@ -13,22 +13,17 @@ VERSION="$1"
 # Which docker image we're gonna use
 IMAGE="quay.io/ipfs/jenkins"
 
-# Git checkout
-CURRENT_COMMIT=$(git rev-parse HEAD)
-if [ "$VERSION" == "$CURRENT_COMMIT" ]; then
-	echo "SCM up-to-date"
-else
-	echo "Updating config"
-	git checkout master
-	git fetch
-	git checkout $VERSION
-	rm -r config/users/* || true
-	git submodule init
-	git submodule update
-	(cd jenkins-secrets && ./decrypt.sh)
-	git apply jenkins-secrets/plain_config_production.patch
-	mv jenkins-secrets/plain_credentials.xml config/credentials.xml
-fi
+echo "Updating config"
+git reset --hard
+git checkout master
+git pull origin master
+git checkout $VERSION
+rm -r config/users/* || true
+git submodule init
+git submodule update
+(cd jenkins-secrets && ./decrypt.sh)
+git apply jenkins-secrets/plain_config_production.patch
+mv jenkins-secrets/plain_credentials.xml config/credentials.xml
 
 # Image deploy
 IMAGE_TO_DEPLOY="$IMAGE:$VERSION"
