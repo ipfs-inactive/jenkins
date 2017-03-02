@@ -3,7 +3,7 @@
   <name>linux-01</name>
   <description></description>
   <remoteFS>/tmp/jenkins</remoteFS>
-  <numExecutors>4</numExecutors>
+  <numExecutors>8</numExecutors>
   <mode>NORMAL</mode>
   <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
   <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@1.13">
