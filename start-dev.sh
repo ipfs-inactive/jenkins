@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 docker build -t ipfs/jenkins:latest .
 # TODO detect if /var/run/docker.sock exists and errors if it doesn't
 # TODO allow people to change path to socket
