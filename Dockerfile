@@ -1,7 +1,7 @@
-FROM jenkins:2.32.2-alpine
+FROM jenkins/jenkins:2.76-alpine
 
 USER root
 
-RUN apk update && apk add --no-cache docker=1.11.2-r1
+RUN apk update && apk add --no-cache docker=1.12.6-r0
 
 USER jenkins
