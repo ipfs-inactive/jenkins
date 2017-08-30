@@ -63,3 +63,10 @@ listening to 127.0.0.1 and not 0.0.0.0. Secrets are replaced when jenkins is dep
 
 When running in production, `start-prod.sh` require access to protocol/jenkins-secrets
 to be able to decrypt and apply production patch.
+
+## Running dev-environment
+
+* Have Github OAuth application setup
+* Replace SecretID and ClientID in config with dev tokens
+* Setup ngrok to redirect jenkins traffic
+* Change Github OAuth application to redirect to ngrok url
