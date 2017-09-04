@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<org.jenkinsci.plugins.configfiles.GlobalConfigFiles plugin="config-file-provider@2.15.5">
+<org.jenkinsci.plugins.configfiles.GlobalConfigFiles plugin="config-file-provider@2.16.3">
   <configs class="sorted-set">
     <comparator class="org.jenkinsci.plugins.configfiles.GlobalConfigFiles$1"/>
     <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
@@ -10,13 +10,19 @@
 
 node {
     checkout scm
-    def pipeline = sh(returnStdout: true, script: &quot;cat ci/jenkins&quot;).trim()
-    configFileProvider([configFile(fileId: pipeline, variable: &apos;foundPipeline&apos;)]) {
+    def pipelineToRun = &quot;&quot;
+    try {
+        def pip = sh(returnStdout: true, script: &quot;cat ci/jenkins&quot;).trim()
+        pipelineToRun = pip
+    } catch (err) {
+      // assume javascript if we don&apos;t find ci/jenkins
+      // TODO should try to understand which project to build instead
+      pipelineToRun = &quot;javascript&quot;   
+    }
+    configFileProvider([configFile(fileId: pipelineToRun, variable: &apos;foundPipeline&apos;)]) {
         load &quot;$foundPipeline&quot;
     }
-}()
-
-</content>
+}()</content>
       <providerId>org.jenkinsci.plugins.configfiles.groovy.GroovyScript</providerId>
     </org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
     <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
@@ -108,7 +114,8 @@ def runArgs() {
       node {
         checkout scm
         VERSION = sh(returnStdout: true, script: &quot;git rev-parse HEAD&quot;).trim()
-        sh &quot;docker build -f ci/Dockerfile -t quay.io/ipfs/$IMAGE_NAME:$VERSION .&quot;
+        writeFile encoding: &apos;utf-8&apos;, file: &apos;Dockerfile&apos;, text: &apos;FROM quay.io/ipfs/js-base:6.9.4&apos;
+        sh &quot;docker build -t quay.io/ipfs/$IMAGE_NAME:$VERSION .&quot;
       }
     }
 
@@ -119,6 +126,13 @@ def runArgs() {
         }},
         &apos;browser&apos;: { node {
           sh &quot;docker run --privileged quay.io/ipfs/$IMAGE_NAME:$VERSION npm run test:browser&quot;
+        }},
+        &apos;coverage&apos;: { node {
+          sh &quot;rm container-id || true&quot;
+          sh &quot;docker run --cidfile container-id quay.io/ipfs/$IMAGE_NAME:$VERSION npm run coverage&quot;
+          def CONTAINER_ID = readFile &apos;container-id&apos;
+          sh &quot;docker cp $CONTAINER_ID:/usr/src/app/coverage $WORKSPACE&quot;
+          archiveArtifacts &apos;coverage/&apos;
         }}
       )
     }
