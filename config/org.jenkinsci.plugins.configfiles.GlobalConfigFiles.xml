@@ -122,14 +122,14 @@ def runArgs() {
     stage(&quot;Tests&quot;) {
       parallel( 
         &apos;nodejs&apos;:{ node {
-          sh &quot;docker run quay.io/ipfs/$IMAGE_NAME:$VERSION npm run test:node&quot;
+          sh &quot;docker run quay.io/ipfs/$IMAGE_NAME:$VERSION &apos;npm run test:node&apos;&quot;
         }},
         &apos;browser&apos;: { node {
-          sh &quot;docker run --privileged quay.io/ipfs/$IMAGE_NAME:$VERSION npm run test:browser&quot;
+          sh &quot;docker run --privileged quay.io/ipfs/$IMAGE_NAME:$VERSION &apos;npm run test:browser&apos;&quot;
         }},
         &apos;coverage&apos;: { node {
           sh &quot;rm container-id || true&quot;
-          sh &quot;docker run --cidfile container-id quay.io/ipfs/$IMAGE_NAME:$VERSION npm run coverage&quot;
+          sh &quot;docker run --cidfile container-id quay.io/ipfs/$IMAGE_NAME:$VERSION &apos;npm run coverage&apos;&quot;
           def CONTAINER_ID = readFile &apos;container-id&apos;
           sh &quot;docker cp $CONTAINER_ID:/usr/src/app/coverage $WORKSPACE&quot;
           archiveArtifacts &apos;coverage/&apos;
