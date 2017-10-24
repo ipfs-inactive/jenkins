@@ -1,0 +1,9 @@
+[Unit]
+Description=Jenkins Swarm
+
+[Service]
+ExecStart=/usr/bin/java -jar /tmp/swarm-client-${swarm_version}.jar -master ${jenkins_master} -password ${jenkins_password} -username ${jenkins_username} -tunnel ${jenkins_worker_tunnel} -labels ${linux_jenkins_worker_labels} -mode exclusive -name ${linux_jenkins_worker_name} -fsroot ${linux_jenkins_worker_fsroot}
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

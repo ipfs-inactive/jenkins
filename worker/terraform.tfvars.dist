@@ -1,0 +1,34 @@
+# Copy this file to `terraform.tfvars` (without `.dist` in the end)
+# Next, replace empty strings with AWS API Key
+aws_access_key = ""
+aws_secret_key = ""
+
+# Windows Admin Password (has to complex otherwise user_data won't init! )
+windows_admin_password = "helloworld123!"
+
+# Jenkins Swarm
+swarm_version = "3.6"
+
+# Jenkins
+jenkins_master = "https://jenkinsci.ngrok.io/"
+jenkins_username = "admin"
+jenkins_password = "admin"
+# Format: host:port
+jenkins_worker_tunnel = "0.tcp.ngrok.io:13228"
+
+# Linux
+linux_ami = "ami-2757f631"
+linux_type = "m3.large"
+linux_count = 1
+linux_jenkins_worker_labels = "linux"
+linux_jenkins_worker_name = "aws-linux"
+linux_jenkins_worker_fsroot = "/tmp/jenkins"
+
+# Windows
+windows_ami = "ami-5648ad2c"
+windows_type = "m3.large"
+windows_count = 1
+windows_jenkins_worker_labels = "windows"
+windows_jenkins_worker_name = "aws-windows"
+# escaping with \ because of Terraform
+windows_jenkins_worker_fsroot = "c:\\jenkins"
