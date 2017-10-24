@@ -1,0 +1,10 @@
+authtoken: fillmein
+tunnels:
+  jenkins:
+    proto: http
+    addr: 8090
+    subdomain: jenkinsci
+  agents:
+    proto: tcp
+    addr: 50000
+    subdomain: jenkinsci-agents
