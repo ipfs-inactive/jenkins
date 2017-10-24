@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.plugins.nodejs.tools.NodeJSInstallation_-DescriptorImpl plugin="nodejs@1.2.3">
+  <installations class="jenkins.plugins.nodejs.tools.NodeJSInstallation-array">
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>nodejs</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>8.6.0</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>8.7.0</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>8.7.0</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+  </installations>
+</jenkins.plugins.nodejs.tools.NodeJSInstallation_-DescriptorImpl>
