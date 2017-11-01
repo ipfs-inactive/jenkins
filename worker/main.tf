@@ -153,11 +153,9 @@ resource "aws_instance" "windows" {
 
   provisioner "remote-exec" {
     inline = [
-      # For some reason, has to call this again for wget to be in $PATH...
-      "choco install -y wget",
-
+      "@\"%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\" && SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\"",
+      "choco install -y wget jre8 git nssm",
       "wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
-      "SLEEP 10",
       "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master ${var.jenkins_master} -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_worker_tunnel} -labels ${var.windows_jenkins_worker_labels} -mode exclusive -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot}",
       "nssm start swarm",
     ]
@@ -170,15 +168,6 @@ resource "aws_instance" "windows" {
   # Set Administrator password
   $admin = [adsi]("WinNT://./administrator, user")
   $admin.psbase.invoke("SetPassword", "${var.windows_admin_password}")
-
-	# Install Java and run slave
-# TODO should be copied over instead of downloaded
-	Set-ExecutionPolicy Bypass; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-	refreshenv
-	choco install -y jre8 git wget nssm
-	refreshenv
-# TODO should be copied over instead of downloaded
-	wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar -OutFile swarm.jar
 </powershell>
 EOF
 }
