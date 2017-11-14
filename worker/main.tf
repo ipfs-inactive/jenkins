@@ -25,6 +25,7 @@ variable "windows_jenkins_worker_name" {}
 variable "windows_jenkins_worker_fsroot" {}
 
 provider "aws" {
+  version    = "1.0.0"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
   region     = "us-east-1"
@@ -33,7 +34,7 @@ provider "aws" {
 resource "aws_key_pair" "victor-ssh" {
   # TODO should add more peoples keys as well
   key_name   = "victor-ssh-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCrlu15krG+ihFgYpkjkBwYxjVpgh2VUGAbtVSlzA0CgZ957GyCGz7kUzMcxA00Hbnhx+PbLwIy7Q0kRz32yon5mpnyUHqRlriq44kHeqQUgQTGW3+HWK+f81BWCTQp+9zFwgpFREAeh6qAWHx+aTO6oXxGLWVclZ5eT/G29ShOm39TCt3WUaQy6IZyQbuVz3F/KROCQUz43XwJxQfGLQHCLldm8Pii3dO37p15RpyPx6LdzdhFsCvKqSdnWv/webdLi8VgpGTa1oXaTUH3zsnjr+UdkHA1ombxgUT5wROb+6v1XxVtt2plw9XQCD1KqHGSJVNMPWBN6VvGZiP0JdsTc78tOVECJYIvgBshtOCilXGejyQYxxNdunFocMFw3nidFPXyQq2mIffDEt2gRlLoVK9bfcHQCVtu0+9q4NrcMpdpBOfdEPGDVwv2kLc92J6TvIuf4u4Thcw8Mwa/ykWamlRuM7Ti8hiIPQca02YJUOAjQ65+5HU9TDO3tlei2PuehVRDncEMKV4w03pq4bXxOPXOHFnC06LFOYR2YJWLoJHK46UhJWhFDFhJp14Zs6ILaBbDXVSM/7b9f9ZHtY8EL4u7wlZ6Qzlh2tthW6M4x7aof6cvG7YNRgbyF6RuoCOIzb13tkLzjfqG05msEEwnSsCb1DuYFGA6kRR/qujXqQ== victor@tokelau"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMOBeiZnugxLNgt4sJZPMVzrW3sMpkB2PFv9V4ESW5FZEJPsV0Q09XAfFQL8RxWB0UFMZk43lqImfXoxpLrMyAOa2/sco/2r0uEGtLscYAg6HwCuaXnZeuMwByYIrUSfmZPd7mGo1GYqP5gVfuaKkAVnIplXK5khQL4Ix+aJADDmUdWrBWVeP4KlqfDWM7DCcc8nF9+8C8Wu6uE5a8Zn2c25laML472F3havXysj8lp+VRz2KOSSpVYLOifYajbQH2GaxuynLOny6+vOIVO1LQf5Do+RgWT70sWUdb9S+kjwqlijFUTTvzXuA5cSHReS8h9wtcSRra4qlWpcGr0O0BET1o7CWJXbmmBhtsj+yjR0rR5Xt5/tqEVrHCImdL+ggDmn4wQbRDCRTO6EcnZNiPgdRuve73gguzAFKCINMId3L/ttqOnjn8Bjis046ypKwvSvkan75tJ3/ZpMYSCop51ULdPG8UvdJjH6x75e94S8iH7UYU5c1gFXE+ciukkyyje2ldoaD3zZLUFAWc7XZSZ6iQCvEQCZx32suqgbBzQ4jgoLuxBY7Lpe2sedYGbixBGALgd7jbzG+3NwQeNFOcifbJ/ncPdtpIuYYsKzWtxcJSeOiWqzZWaSkHIqP4TGOgd9GNgedmg/AeeubgDqkN+wI5wy/DynZb0jdtzOZfSQ== victor@niue"
 }
 
 resource "aws_security_group" "jenkins_windows" {
@@ -121,14 +122,14 @@ resource "aws_instance" "linux" {
 
   provisioner "remote-exec" {
     inline = [
+      "wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -",
+      "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list",
       "sudo apt update",
-      "sudo apt install --yes wget htop default-jre",
-
-      # TODO should be copied over instead of downloaded
+      "sudo apt install --yes wget htop default-jre google-chrome-stable xvfb python python3 build-essential make",
       "cd /tmp && wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
-
       "sudo mv /tmp/swarm.service /etc/systemd/system/swarm.service",
       "sudo systemctl start swarm",
+      "echo service started"
     ]
   }
 }
@@ -154,7 +155,8 @@ resource "aws_instance" "windows" {
   provisioner "remote-exec" {
     inline = [
       "@\"%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\" && SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\"",
-      "choco install -y wget jre8 git nssm",
+      "choco install -y wget jre8 git nssm googlechrome python2 python3 vcredist2015 mingw make nodejs microsoft-visual-cpp-build-tools ",
+      "npm install --verbose --global --production windows-build-tools",
       "wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
       "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master ${var.jenkins_master} -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_worker_tunnel} -labels ${var.windows_jenkins_worker_labels} -mode exclusive -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot}",
       "nssm start swarm",
