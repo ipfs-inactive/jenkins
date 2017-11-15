@@ -19,12 +19,14 @@ config/jobs/*/nextBuildNumber
 config/jobs/*/branches
 config/jobs/*/indexing
 config/jobs/*/state.xml
+config/jobs/**/jobs
 config/jobs/**/builds
 config/jobs/**/lastStable
 config/jobs/**/lastSuccessful
 config/jobs/**/nextBuildNumber
 config/jobs/**/branches
 config/jobs/**/indexing
+config/jobs/**/computation
 config/jobs/**/state.xml
 config/workspace/*
 config/plugins/*
