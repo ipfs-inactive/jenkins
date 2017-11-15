@@ -25,7 +25,6 @@ variable "windows_jenkins_worker_name" {}
 variable "windows_jenkins_worker_fsroot" {}
 
 provider "aws" {
-  version    = "1.0.0"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
   region     = "us-east-1"
