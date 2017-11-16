@@ -169,6 +169,7 @@ resource "aws_instance" "windows" {
   # Set Administrator password
   $admin = [adsi]("WinNT://./administrator, user")
   $admin.psbase.invoke("SetPassword", "${var.windows_admin_password}")
+  Set-MpPreference -DisableRealtimeMonitoring $true
 </powershell>
 EOF
 }
