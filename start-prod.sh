@@ -38,7 +38,7 @@ else
 		--name jenkins \
 		--restart=always \
 		-p 127.0.0.1:8090:8080 \
-		-p 0.0.0.0:50000:50000 \
+		-p 50000:50000 \
 		-v $(pwd)/config:/var/jenkins_home \
 		-v $(pwd)/jenkins-secrets:/home/jenkins/secrets \
 		--group-add "$(getent group docker | cut -d':' -f 3)" \
