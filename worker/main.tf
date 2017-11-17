@@ -131,6 +131,10 @@ resource "aws_instance" "linux" {
       "echo service started"
     ]
   }
+
+  root_block_device {
+    volume_size = "100"
+  }
 }
 
 resource "aws_instance" "windows" {
@@ -160,6 +164,10 @@ resource "aws_instance" "windows" {
       "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master ${var.jenkins_master} -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_worker_tunnel} -labels ${var.windows_jenkins_worker_labels} -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot}",
       "nssm start swarm",
     ]
+  }
+
+  root_block_device {
+    volume_size = "100"
   }
 
   user_data = <<EOF
