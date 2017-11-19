@@ -125,6 +125,8 @@ resource "aws_instance" "linux" {
       "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list",
       "sudo apt update",
       "sudo apt install --yes wget htop default-jre google-chrome-stable xvfb python python3 build-essential make",
+      "curl https://get.docker.com | sh",
+      "sudo usermod -aG docker ubuntu",
       "cd /tmp && wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
       "sudo mv /tmp/swarm.service /etc/systemd/system/swarm.service",
       "sudo systemctl start swarm",
