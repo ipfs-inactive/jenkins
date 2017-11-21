@@ -10,7 +10,7 @@
           <retriever class="org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever">
             <scm class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.3.1">
               <id>587045f7-43ca-42eb-a9bb-a79428996735</id>
-              <credentialsId>50becd95-98d7-4d2c-b1c6-1556c6441960</credentialsId>
+              <credentialsId>immutablejenkins</credentialsId>
               <repoOwner>victorbjelkholm</repoOwner>
               <repository>jenkins-libs</repository>
               <traits>
@@ -68,7 +68,7 @@
   <navigators>
     <org.jenkinsci.plugins.github__branch__source.GitHubSCMNavigator plugin="github-branch-source@2.3.1">
       <repoOwner>libp2p</repoOwner>
-      <credentialsId>50becd95-98d7-4d2c-b1c6-1556c6441960</credentialsId>
+      <credentialsId>immutablejenkins</credentialsId>
       <traits>
         <org.jenkinsci.plugins.github__branch__source.BranchDiscoveryTrait>
           <strategyId>1</strategyId>
