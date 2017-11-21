@@ -8,7 +8,7 @@
       <comment>Jenkinsfile</comment>
       <content>#!groovy
 
-node {
+node(label: &apos;linux&apos;) {
     checkout scm
     def pipelineToRun = &quot;&quot;
     try {
