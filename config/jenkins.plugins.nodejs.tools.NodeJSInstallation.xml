@@ -27,5 +27,18 @@
         </hudson.tools.InstallSourceProperty>
       </properties>
     </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>9.2.0</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>9.2.0</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
   </installations>
 </jenkins.plugins.nodejs.tools.NodeJSInstallation_-DescriptorImpl>
