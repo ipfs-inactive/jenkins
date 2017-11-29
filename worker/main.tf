@@ -65,6 +65,43 @@ resource "aws_security_group" "jenkins_windows" {
   }
 }
 
+resource "aws_security_group" "jenkins_master" {
+  name        = "jenkins_master"
+  description = "Allow inbound ssh traffic/everything outbound"
+
+  # SSH
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Jenkins
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Workers
+  ingress {
+    from_port   = 50000
+    to_port     = 50000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # All allowed outbound
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_security_group" "jenkins_linux" {
   name        = "jenkins_linux"
   description = "Allow inbound ssh traffic/everything outbound"
@@ -162,6 +199,7 @@ resource "aws_instance" "windows" {
       "@\"%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\" && SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\"",
       "choco install -y wget jre8 git nssm googlechrome python2 python3 vcredist2015 make nodejs microsoft-visual-cpp-build-tools ",
       "npm install --verbose --global --production windows-build-tools",
+      "git config --global core.autocrlf input",
       "wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
       "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master ${var.jenkins_master} -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_worker_tunnel} -labels ${var.windows_jenkins_worker_labels} -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot} -mode exclusive -executors 5",
       "nssm start swarm",
@@ -182,6 +220,57 @@ resource "aws_instance" "windows" {
   Set-MpPreference -DisableRealtimeMonitoring $true
 </powershell>
 EOF
+}
+
+resource "aws_instance" "jenkins_master" {
+  security_groups             = ["${aws_security_group.jenkins_master.name}"]
+  ami               = "ami-2757f631"
+  instance_type                         = "m4.xlarge"
+  associate_public_ip_address = true
+  key_name                    = "victor-ssh-key"
+  count                       = "1"
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "sudo apt install --yes wget htop default-jre build-essential make",
+      "curl https://get.docker.com | sh",
+      "sudo usermod -aG docker ubuntu",
+      "wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -",
+      "echo deb https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list",
+      "sudo apt update",
+      "sudo apt install --yes jenkins",
+      "sudo systemctl stop jenkins",
+      "sudo rm -rf /var/lib/jenkins",
+      "sudo git clone -b cross-platform-workers https://github.com/ipfs/jenkins.git /var/lib/jenkins",
+      "sudo chmod -R 777 /var/lib/jenkins",
+    ]
+  }
+
+  provisioner "file" {
+    source = "jenkins.default"
+    destination = "/home/ubuntu/jenkins.default"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp /home/ubuntu/jenkins.default /etc/default/jenkins",
+      "sudo systemctl start jenkins",
+    ]
+  }
+
+  root_block_device {
+    volume_size = "30"
+  }
+}
+
+output "jenkins_masters" {
+  value = "${aws_instance.jenkins_master.*.public_ip}"
 }
 
 output "windows_ips" {
