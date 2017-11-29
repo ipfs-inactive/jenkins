@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<jenkins.plugins.nodejs.tools.NodeJSInstallation_-DescriptorImpl plugin="nodejs@1.2.3">
+<jenkins.plugins.nodejs.tools.NodeJSInstallation_-DescriptorImpl plugin="nodejs@1.2.4">
   <installations class="jenkins.plugins.nodejs.tools.NodeJSInstallation-array">
     <jenkins.plugins.nodejs.tools.NodeJSInstallation>
       <name>nodejs</name>
@@ -37,6 +37,27 @@
               <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
             </jenkins.plugins.nodejs.tools.NodeJSInstaller>
           </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>8.9.1</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>8.9.1</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>9.2.0</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers/>
         </hudson.tools.InstallSourceProperty>
       </properties>
     </jenkins.plugins.nodejs.tools.NodeJSInstallation>
