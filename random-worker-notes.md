@@ -40,15 +40,20 @@ java -jar swarm-client-3.6.jar -master https://ci.ipfs.team/ -password X -userna
 ```
 
 * Had to change `start-prod` to listen 50000 on all available interfaces
+	* done
 * Currently running ci.ipfs.team from the cross-platform branch
 * macOS setup is currently manual
 * Currently having issues with commit status and permissions in Github
+	* fix: give ImmutableJenkins access to `commit:status` permission
 * Windows worker having permissions problems with npm
+	* fixed: turn of realtime protection
 
 * API token for ImmutableJenkins user is different on each boot
 * Had to switch ImmutableJenkins password for a API access token for jenkins access
 
-* start-prod needs to bind on public endpoint
 * go-ipfs job needs to run on node with label `linux`
 * Give user ImmutableJenkins admin access to jenkins
 * Give Github user ImmutableJenkins commit:status access to all orgs
+
+* Workers should have go-ipfs installed?
+* Golang tools...
