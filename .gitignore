@@ -1,4 +1,4 @@
-*.bak
+# Jenkins junk
 config/.java/
 config/copy_reference_file.log
 config/logs/
@@ -31,7 +31,17 @@ config/jobs/**/state.xml
 config/workspace/*
 config/plugins/*
 config/workspace/*
-!config/plugins/*.jpi
 config/jenkins.security.RekeySecretAdminMonitor/needed
 config/.cache
 config/.owner
+
+# Include plugins
+!config/plugins/*.jpi
+
+# Terraform
+terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+
+# Misc
+*.bak
