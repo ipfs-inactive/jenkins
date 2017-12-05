@@ -42,6 +42,6 @@ else
 		-v $(pwd)/jenkins-secrets:/home/jenkins/secrets \
 		--group-add "$(getent group docker | cut -d':' -f 3)" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
-		--env JAVA_OPTS=-Djenkins.install.runSetupWizard=false \
+		--env JAVA_OPTS="-Xmx4096m -Djenkins.install.runSetupWizard=false" \
 		$IMAGE_TO_DEPLOY
 fi
