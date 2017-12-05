@@ -39,6 +39,23 @@ wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.
 java -jar swarm-client-3.6.jar -master https://ci.ipfs.team/ -password X -username ImmutableJenkins -tunnel ci.ipfs.team:50000 -labels macos -mode exclusive -name macstadium-macos -fsroot /var/jenkins
 ```
 
+## macOS network setup
+
+```
+IP
+207.254.26.194
+
+Subnet
+255.255.255.240
+
+Router
+207.254.26.193
+
+networksetup -listallnetworkservices
+sudo networksetup -setmanual "Ethernet 10" 207.254.26.194 255.255.255.240 207.254.26.193
+sudo networksetup -setdnsservers "Ethernet 10" 8.8.8.8
+```
+
 * Had to change `start-prod` to listen 50000 on all available interfaces
 	* done
 * Currently running ci.ipfs.team from the cross-platform branch
