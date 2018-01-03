@@ -319,7 +319,7 @@ EOF
 
 resource "dnsimple_record" "jenkins_domain" {
   domain = "${var.dnsimple_domain}"
-  name   = "${terraform.workspace}.${var.dnsimple_subdomain}"
+  name   = "${terraform.workspace == "default" ? var.dnsimple_subdomain : join(".", list(terraform.workspace, var.dnsimple_subdomain))}"
   value  = "${aws_instance.jenkins_master.0.public_ip}"
   type   = "A"
   ttl    = 1
