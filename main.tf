@@ -425,7 +425,7 @@ resource "aws_instance" "jenkins_master" {
   }
 
   root_block_device {
-    volume_size = "30"
+    volume_size = "1000"
   }
 }
 
