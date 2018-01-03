@@ -1,10 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<scriptApproval plugin="script-security@1.31">
+<scriptApproval plugin="script-security@1.35">
   <approvedScriptHashes>
+    <string>00c2e588c10d5d40f4f1d187de443791eea44723</string>
     <string>13443b6c7f6009cc0a6ddeffd43bdb30e6c0ab0e</string>
     <string>d68c4262823d731637da640578b067cbc8218cbb</string>
   </approvedScriptHashes>
-  <approvedSignatures/>
+  <approvedSignatures>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] java.util.Collection</string>
+  </approvedSignatures>
   <aclApprovedSignatures/>
   <approvedClasspathEntries/>
   <pendingScripts/>

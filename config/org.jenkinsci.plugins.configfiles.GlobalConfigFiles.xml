@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<org.jenkinsci.plugins.configfiles.GlobalConfigFiles plugin="config-file-provider@2.16.3">
+<org.jenkinsci.plugins.configfiles.GlobalConfigFiles plugin="config-file-provider@2.16.4">
   <configs class="sorted-set">
     <comparator class="org.jenkinsci.plugins.configfiles.GlobalConfigFiles$1"/>
     <org.jenkinsci.plugins.configfiles.groovy.GroovyScript>
@@ -8,7 +8,7 @@
       <comment>Jenkinsfile</comment>
       <content>#!groovy
 
-node {
+node(label: &apos;linux&apos;) {
     checkout scm
     def pipelineToRun = &quot;&quot;
     try {
@@ -39,7 +39,7 @@ node {
 
   ansiColor(&apos;xterm&apos;) {withEnv([&quot;TERM=xterm-color&quot;]){ timeout(time: 15, unit: &apos;MINUTES&apos;){
     stage(&quot;Build Container&quot;) {
-      node {
+      node(label: &apos;linux&apos;) {
         checkout scm
         VERSION = sh(returnStdout: true, script: &quot;git rev-parse HEAD&quot;).trim()
         IMAGE = &quot;quay.io/ipfs/go-ipfs:$VERSION&quot;
@@ -53,12 +53,12 @@ node {
 
     stage(&quot;Checks&quot;) {
       parallel(
-        &apos;go fmt&apos;: { node {
+        &apos;go fmt&apos;: { node(label: &apos;linux&apos;) {
           image.withRun runArgs(), { c -&gt;
             sh &quot;$dexec ${c.id} make test_go_fmt&quot;
           }
         }},
-        &apos;go build&apos;: { node {
+        &apos;go build&apos;: { node(label: &apos;linux&apos;) {
           // due to bug in Jenkins (JENKINS-38268) names of closure params have to be different
           image.withRun runArgs(), { c1 -&gt;
             sh &quot;$dexec ${c1.id} make cmd/ipfs/ipfs&quot;
@@ -72,12 +72,12 @@ node {
 
     stage(&quot;Tests &amp; Coverage&quot;) {
       parallel(
-        &apos;sharness&apos;: { node {
+        &apos;sharness&apos;: { node(label: &apos;linux&apos;) {
           image.withRun runArgs(), { c -&gt;
             sh &quot;$dexec ${c.id} make -j3 -Otarget test_go_expensive&quot;
           }
         }},
-        &apos;go test&apos;: { node {
+        &apos;go test&apos;: { node(label: &apos;linux&apos;) {
           image.withRun runArgs(), { c1 -&gt;
             sh &quot;$dexec ${c1.id} make -j3 -Otarget test_sharness_expensive&quot;
           }

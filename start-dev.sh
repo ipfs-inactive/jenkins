@@ -8,6 +8,7 @@ docker build -t ipfs/jenkins:latest .
 
 DOCKER_ARGS=(
 -p 127.0.0.1:8090:8080
+-p 127.0.0.1:50000:50000
 
 -v /var/run/docker.sock:/var/run/docker.sock
 # --group-add adds main process to supplementary group

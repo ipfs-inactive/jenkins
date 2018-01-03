@@ -1,0 +1,4 @@
+- Secrets into environment variables
+- Automatically setup of Caddy
+- Different environments
+- IPFS on master + worker
