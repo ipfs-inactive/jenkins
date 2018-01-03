@@ -3,6 +3,17 @@
 aws_access_key = ""
 aws_secret_key = ""
 
+dnsimple_token = "x"
+dnsimple_account = "70480"
+dnsimple_domain = "ipfs.team"
+dnsimple_subdomain = "ci"
+
+# Credentials
+jenkins_master_auth_client_id = ""
+jenkins_master_auth_client_secret = ""
+jenkins_master_immutablejenkins_auth_token = ""
+jenkins_master_github_webhook_secret = ""
+
 # Windows Admin Password (has to complex otherwise user_data won't init! )
 windows_admin_password = "helloworld123!"
 

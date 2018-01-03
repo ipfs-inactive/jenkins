@@ -1,6 +1,11 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
+variable "dnsimple_token" {}
+variable "dnsimple_account" {}
+variable "dnsimple_domain" {}
+variable "dnsimple_subdomain" {}
+
 variable "windows_admin_password" {}
 
 variable "swarm_version" {}
@@ -22,12 +27,24 @@ variable "windows_jenkins_worker_labels" {}
 variable "windows_jenkins_worker_name" {}
 variable "windows_jenkins_worker_fsroot" {}
 
+variable "jenkins_master_auth_client_id" {}
+variable "jenkins_master_auth_client_secret" {}
+variable "jenkins_master_immutablejenkins_auth_token" {}
+variable "jenkins_master_github_webhook_secret" {}
+
 provider "aws" {
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
-  region     = "eu-central-1"
+  region     = "us-east-1"
 }
 
+provider "dnsimple" {
+  token = "${var.dnsimple_token}"
+  account = "${var.dnsimple_account}"
+}
+
+# TODO experiment in progress for getting automated
+# setup of macOS workers, not currently working
 # provider "vsphere" {
 #   user           = "x"
 #   password       = "x"
@@ -135,7 +152,24 @@ resource "aws_security_group" "jenkins_master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # http
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # https
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Jenkins
+  # TODO should not be needed anymore
   ingress {
     from_port   = 8080
     to_port     = 8080
@@ -144,6 +178,7 @@ resource "aws_security_group" "jenkins_master" {
   }
 
   # Workers
+  # TODO move workers to use internal network
   ingress {
     from_port   = 50000
     to_port     = 50000
@@ -202,7 +237,8 @@ resource "aws_instance" "linux" {
   instance_type               = "${var.linux_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
-  count                       = "${var.linux_count}"
+  count                       = "${terraform.workspace == "default" ? var.windows_count : 1}"
+  tags { Name = "worker-linux" }
 
   connection {
     type = "ssh"
@@ -240,7 +276,8 @@ resource "aws_instance" "windows" {
   instance_type               = "${var.windows_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
-  count                       = "${var.windows_count}"
+  count                       = "${terraform.workspace == "default" ? var.windows_count : 1}"
+  tags { Name = "worker-windows" }
 
   connection {
     type = "winrm"
@@ -249,7 +286,7 @@ resource "aws_instance" "windows" {
     password = "${var.windows_admin_password}"
 
     # set from default of 5m to 10m to avoid winrm timeout
-    timeout = "10m"
+    timeout = "30m"
   }
 
   provisioner "remote-exec" {
@@ -280,34 +317,69 @@ resource "aws_instance" "windows" {
 EOF
 }
 
+resource "dnsimple_record" "jenkins_domain" {
+  domain = "${var.dnsimple_domain}"
+  name   = "${terraform.workspace}.${var.dnsimple_subdomain}"
+  value  = "${aws_instance.jenkins_master.0.public_ip}"
+  type   = "A"
+  ttl    = 1
+}
+
 resource "aws_instance" "jenkins_master" {
-  ami                         = "ami-df8406b0"
+  ami                         = "${var.linux_ami}"
   instance_type               = "m4.xlarge"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
   count                       = "1"
   security_groups             = ["${aws_security_group.jenkins_master.name}"]
+  tags { Name = "jenkins-master" }
 
   connection {
     type = "ssh"
     user = "ubuntu"
   }
 
+  provisioner "file" {
+    source      = "config"
+    destination = "/home/ubuntu/jenkins"
+  }
+
   # Install dependencies + jenkins
   provisioner "remote-exec" {
     inline = [
       "sudo apt update",
-      "sudo apt install --yes wget htop default-jre build-essential make",
+      "sudo apt install --yes wget htop default-jre build-essential make python-minimal",
       "curl https://get.docker.com | sh",
       "sudo usermod -aG docker ubuntu",
+      # Prevent jenkins to start by itself
+      "echo exit 101 | sudo tee /usr/sbin/policy-rc.d",
+      "sudo chmod +x /usr/sbin/policy-rc.d",
       "wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -",
       "echo deb https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list",
       "sudo apt update",
       "sudo apt install --yes jenkins",
-      "sudo systemctl stop jenkins",
       "sudo rm -rf /var/lib/jenkins",
-      "sudo git clone -b cross-platform-workers https://github.com/ipfs/jenkins.git /var/lib/jenkins",
-      "sudo chmod -R 777 /var/lib/jenkins",
+      "sudo mv /home/ubuntu/jenkins /var/lib/jenkins",
+      "sudo chown -R jenkins /var/lib/jenkins"
+    ]
+  }
+
+  # Setup caddy
+  provisioner "file" {
+    source      = "Caddyfile"
+    destination = "/home/ubuntu/Caddyfile"
+  }
+  provisioner "file" {
+    source      = "caddy.service"
+    destination = "/tmp/caddy.service"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "curl https://getcaddy.com | bash -s personal",
+      "sudo mv /tmp/caddy.service /etc/systemd/system/caddy.service",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl start caddy",
+      "echo caddy running"
     ]
   }
 
@@ -317,32 +389,38 @@ resource "aws_instance" "jenkins_master" {
     destination = "/home/ubuntu/jenkins.default"
   }
 
-	# Get secrets
-	provisioner "local-exec" {
-		command = "./get-secrets.sh"
-	}
-
-	# Copy over secrets
   provisioner "file" {
-    source      = "jenkins-secrets"
-    destination = "/home/ubuntu/secrets"
+    content     = "${var.jenkins_master_auth_client_id}"
+    destination = "/tmp/clientid"
   }
 
-	# Apply secrets
-  provisioner "remote-exec" {
-    inline = [
-      "cd /var/lib/jenkins && git apply /home/ubuntu/secrets/plain_config_production.patch",,
-			"cp /home/ubuntu/secrets/plain_credentials.xml /var/lib/jenkins/config/credentials.xml",
-      "sudo systemctl restart jenkins",
-			"echo started",
-    ]
+  provisioner "file" {
+    content     = "${var.jenkins_master_auth_client_secret}"
+    destination = "/tmp/clientsecret"
+  }
+
+  provisioner "file" {
+    content     = "${var.jenkins_master_immutablejenkins_auth_token}"
+    destination = "/tmp/userauthtoken"
+  }
+
+  provisioner "file" {
+    content     = "${var.jenkins_master_github_webhook_secret}"
+    destination = "/tmp/githubwebhooksecret"
   }
 
   # Start jenkins
   provisioner "remote-exec" {
     inline = [
+      "sudo chown jenkins /tmp/clientid",
+      "sudo chown jenkins /tmp/clientsecret",
+      "sudo chown jenkins /tmp/userauthtoken",
+      "sudo chown jenkins /tmp/githubwebhooksecret",
       "sudo cp /home/ubuntu/jenkins.default /etc/default/jenkins",
-      "sudo systemctl start jenkins",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl restart jenkins",
+      "echo applied default file",
+      "sleep 20 && sudo bash /var/lib/jenkins/setup-auth.sh"
     ]
   }
 
