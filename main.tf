@@ -237,7 +237,7 @@ resource "aws_instance" "linux" {
   instance_type               = "${var.linux_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
-  count                       = "${terraform.workspace == "default" ? var.windows_count : 1}"
+  count                       = "${terraform.workspace == "default" ? var.linux_count : 1}"
   tags { Name = "worker-linux" }
 
   connection {
