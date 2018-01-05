@@ -420,7 +420,13 @@ resource "aws_instance" "jenkins_master" {
       "sudo systemctl daemon-reload",
       "sudo systemctl restart jenkins",
       "echo applied default file",
-      "sleep 20 && sudo bash /var/lib/jenkins/setup-auth.sh"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo applying security configuration",
+      "sleep 20 && sudo bash /var/lib/jenkins/setup-auth.sh",
     ]
   }
 
