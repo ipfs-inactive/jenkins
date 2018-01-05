@@ -18,7 +18,7 @@ jenkins_master_github_webhook_secret = ""
 windows_admin_password = "helloworld123!"
 
 # Jenkins Swarm
-swarm_version = "3.6"
+swarm_version = "3.7"
 
 # Jenkins
 jenkins_master = "https://jenkinsci.ngrok.io/"
