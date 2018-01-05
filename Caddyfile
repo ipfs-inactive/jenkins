@@ -1,9 +1,9 @@
-beta.ci.ipfs.team
+ci.ipfs.team
 gzip
 log /var/log/caddy-access.log
 
 proxy / localhost:8080 {
   transparent
-  header_upstream -Authorization
+  # header_upstream -Authorization
 }
-basicauth /prometheus username password
+# basicauth /prometheus username password
