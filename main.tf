@@ -292,7 +292,7 @@ resource "aws_instance" "windows" {
   provisioner "remote-exec" {
     inline = [
       "@\"%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \"iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\" && SET \"PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\"",
-      "choco install -y wget jre8 git nssm googlechrome python2 python3 vcredist2015 make nodejs microsoft-visual-cpp-build-tools ",
+      "choco install -y wget jre8 git nssm googlechrome python2 python3 vcredist2015 make nodejs microsoft-visual-cpp-build-tools rktools.2003",
       "npm install --verbose --global --production windows-build-tools",
       "git config --global core.autocrlf input",
       "wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
