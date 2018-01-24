@@ -157,6 +157,14 @@ resource "aws_security_group" "jenkins_master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # NFS for AWS EFS
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # All allowed outbound
   egress {
     from_port   = 0
@@ -203,6 +211,12 @@ resource "dnsimple_record" "jenkins_domain" {
   ttl    = 1
 }
 
+resource "aws_efs_file_system" "fs" {
+  tags {
+    Name = "jenkins-master"
+  }
+}
+
 resource "aws_instance" "jenkins_master" {
   ami                         = "${var.linux_ami}"
   instance_type               = "m4.xlarge"
@@ -222,6 +236,17 @@ resource "aws_instance" "jenkins_master" {
     destination = "/home/ubuntu/jenkins"
   }
 
+  # Install and setup EFS
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install --yes nfs-common",
+      "sudo mkdir /efs",
+      "sudo chown -R ubuntu /efs",
+      "sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${aws_efs_file_system.fs.dns_name}:/ /efs",
+    ]
+  }
+
   # Install dependencies + jenkins
   provisioner "remote-exec" {
     inline = [
@@ -236,9 +261,8 @@ resource "aws_instance" "jenkins_master" {
       "echo deb https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list",
       "sudo apt update",
       "sudo apt install --yes jenkins",
-      "sudo rm -rf /var/lib/jenkins",
-      "sudo mv /home/ubuntu/jenkins /var/lib/jenkins",
-      "sudo chown -R jenkins /var/lib/jenkins"
+      "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins",
+      "sudo chown -R jenkins /efs/jenkins/"
     ]
   }
 
@@ -250,15 +274,6 @@ resource "aws_instance" "jenkins_master" {
   provisioner "file" {
     source      = "caddy.service"
     destination = "/tmp/caddy.service"
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "curl https://getcaddy.com | bash -s personal",
-      "sudo mv /tmp/caddy.service /etc/systemd/system/caddy.service",
-      "sudo systemctl daemon-reload",
-      "sudo systemctl start caddy",
-      "echo caddy running"
-    ]
   }
 
   # Copy jenkins configuration
@@ -304,7 +319,17 @@ resource "aws_instance" "jenkins_master" {
   provisioner "remote-exec" {
     inline = [
       "echo applying security configuration",
-      "sleep 20 && sudo bash /var/lib/jenkins/setup-auth.sh",
+      "sleep 60 && sudo bash /efs/jenkins/setup-auth.sh",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "curl https://getcaddy.com | bash -s personal",
+      "sudo mv /tmp/caddy.service /etc/systemd/system/caddy.service",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl start caddy",
+      "echo caddy running"
     ]
   }
 

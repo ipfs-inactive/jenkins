@@ -5,6 +5,7 @@ Description=Caddy
 # Use staging ACME for testing, otherwise we'll get rate limited
 # ExecStart=/usr/local/bin/caddy -conf /home/ubuntu/Caddyfile -email infra-accounts@protocol.ai -ca https://acme-staging.api.letsencrypt.org/directory
 ExecStart=/usr/local/bin/caddy -conf /home/ubuntu/Caddyfile -email infra-accounts@protocol.ai
+Environment=CADDYPATH=/efs/.caddy
 Restart=on-failure
 RestartSec=10
 
