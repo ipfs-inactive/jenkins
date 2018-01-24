@@ -12,7 +12,7 @@ variable "windows_jenkins_worker_labels" {}
 variable "windows_jenkins_worker_name" {}
 variable "windows_jenkins_worker_fsroot" {}
 
-variable "jenkins_master_ip" {}
+variable "jenkins_master_domain" {}
 
 resource "aws_security_group" "jenkins_windows" {
   name        = "jenkins_windows"
@@ -69,7 +69,7 @@ resource "aws_instance" "windows" {
       "npm install --verbose --global --production windows-build-tools",
       "git config --global core.autocrlf input",
       "wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${var.swarm_version}/swarm-client-${var.swarm_version}.jar",
-      "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master http://${var.jenkins_master_ip}:8080 -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_master_ip}:50000 -labels ${var.windows_jenkins_worker_labels} -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot} -mode exclusive -executors 1",
+      "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master http://${var.jenkins_master_domain}:8080 -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_master_domain}:50000 -labels ${var.windows_jenkins_worker_labels} -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot} -mode exclusive -executors 1",
       "nssm start swarm",
     ]
   }

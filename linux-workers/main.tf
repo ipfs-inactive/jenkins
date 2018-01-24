@@ -2,7 +2,7 @@ variable "swarm_version" {}
 
 variable "jenkins_username" {}
 variable "jenkins_password" {}
-variable "jenkins_master_ip" {}
+variable "jenkins_master_domain" {}
 
 variable "linux_ami" {}
 variable "linux_type" {}
@@ -37,10 +37,10 @@ data "template_file" "jenkins_worker_service" {
 
   vars {
     swarm_version               = "${var.swarm_version}"
-    jenkins_master              = "http://${var.jenkins_master_ip}:8080"
+    jenkins_master              = "http://${var.jenkins_master_domain}:8080"
     jenkins_username            = "${var.jenkins_username}"
     jenkins_password            = "${var.jenkins_password}"
-    jenkins_worker_tunnel       = "${var.jenkins_master_ip}:50000"
+    jenkins_worker_tunnel       = "${var.jenkins_master_domain}:50000"
     linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
     linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
     linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"

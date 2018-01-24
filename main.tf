@@ -166,7 +166,7 @@ resource "aws_security_group" "jenkins_master" {
   }
 }
 
-module "linux-workers" {
+module "linux_workers" {
   source = "./linux-workers"
   swarm_version = "${var.swarm_version}"
   jenkins_username = "${var.jenkins_username}"
@@ -177,10 +177,10 @@ module "linux-workers" {
   linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
   linux_jenkins_worker_name = "${var.linux_jenkins_worker_name}"
   linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"
-  jenkins_master_ip = "${aws_instance.jenkins_master.0.public_ip}"
+  jenkins_master_domain = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
-module "windows-workers" {
+module "windows_workers" {
   source = "./windows-workers"
   swarm_version = "${var.swarm_version}"
   jenkins_username = "${var.jenkins_username}"
@@ -192,7 +192,7 @@ module "windows-workers" {
   windows_jenkins_worker_labels = "${var.windows_jenkins_worker_labels}"
   windows_jenkins_worker_name = "${var.windows_jenkins_worker_name}"
   windows_jenkins_worker_fsroot = "${var.windows_jenkins_worker_fsroot}"
-  jenkins_master_ip = "${aws_instance.jenkins_master.0.public_ip}"
+  jenkins_master_domain = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
 resource "dnsimple_record" "jenkins_domain" {
@@ -318,9 +318,9 @@ output "jenkins_masters" {
 }
 
 output "linux_ips" {
-  value = "${module.linux-workers.ips}"
+  value = "${module.linux_workers.ips}"
 }
 
 output "windows_ips" {
-  value = "${module.windows-workers.ips}"
+  value = "${module.windows_workers.ips}"
 }
