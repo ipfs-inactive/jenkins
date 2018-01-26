@@ -268,17 +268,17 @@ resource "aws_instance" "jenkins_master" {
 
   # Setup caddy
   provisioner "file" {
-    source      = "Caddyfile"
+    source      = "services/caddy/Caddyfile"
     destination = "/home/ubuntu/Caddyfile"
   }
   provisioner "file" {
-    source      = "caddy.service"
+    source      = "services/caddy/caddy.service"
     destination = "/tmp/caddy.service"
   }
 
   # Copy jenkins configuration
   provisioner "file" {
-    source      = "jenkins.default"
+    source      = "services/jenkins/jenkins.default"
     destination = "/home/ubuntu/jenkins.default"
   }
 

@@ -23,6 +23,14 @@ resource "aws_security_group" "jenkins_linux" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # IPFS swarm
+  ingress {
+    from_port   = 4001
+    to_port     = 4001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # All allowed outbound
   egress {
     from_port   = 0
@@ -33,7 +41,7 @@ resource "aws_security_group" "jenkins_linux" {
 }
 
 data "template_file" "jenkins_worker_service" {
-  template = "${file("swarm.service")}"
+  template = "${file("services/swarm/swarm.service")}"
 
   vars {
     swarm_version               = "${var.swarm_version}"
@@ -62,8 +70,23 @@ resource "aws_instance" "linux" {
   }
 
   provisioner "file" {
+    source     = "services/ipfs/ipfs.service"
+    destination = "/tmp/ipfs.service"
+  }
+
+  provisioner "file" {
     content     = "${data.template_file.jenkins_worker_service.rendered}"
     destination = "/tmp/swarm.service"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "wget https://dist.ipfs.io/go-ipfs/v0.4.13/go-ipfs_v0.4.13_linux-amd64.tar.gz",
+      "tar xfv go-ipfs_v0.4.13_linux-amd64.tar.gz",
+      "cd go-ipfs && sudo ./install.sh",
+      "sudo mv /tmp/ipfs.service /etc/systemd/system/ipfs.service",
+      "sudo systemctl start ipfs"
+    ]
   }
 
   provisioner "remote-exec" {
