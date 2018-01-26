@@ -41,7 +41,7 @@ resource "aws_security_group" "jenkins_linux" {
 }
 
 data "template_file" "jenkins_worker_service" {
-  template = "${file("swarm.service")}"
+  template = "${file("services/swarm/swarm.service")}"
 
   vars {
     swarm_version               = "${var.swarm_version}"
@@ -70,7 +70,7 @@ resource "aws_instance" "linux" {
   }
 
   provisioner "file" {
-    source     = "./ipfs.service"
+    source     = "services/ipfs/ipfs.service"
     destination = "/tmp/ipfs.service"
   }
 
