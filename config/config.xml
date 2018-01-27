@@ -127,6 +127,32 @@
       </columns>
       <recurse>false</recurse>
     </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Websites</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>IPFS/archives</string>
+        <string>IPFS/blog</string>
+        <string>IPFS/docs</string>
+        <string>IPFS/website</string>
+        <string>IPLD/website</string>
+        <string>libp2p/website</string>
+        <string>Multiformats/website</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <jenkins.branch.DescriptionColumn plugin="branch-api@2.0.18"/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <recurse>true</recurse>
+    </listView>
   </views>
   <primaryView>All</primaryView>
   <slaveAgentPort>50000</slaveAgentPort>
