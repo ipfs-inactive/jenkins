@@ -6,6 +6,8 @@ variable "dnsimple_account" {}
 variable "dnsimple_domain" {}
 variable "dnsimple_subdomain" {}
 
+variable "dnsimple_websites_token" {}
+
 variable "windows_admin_password" {}
 
 variable "swarm_version" {}
@@ -262,6 +264,7 @@ resource "aws_instance" "jenkins_master" {
       "sudo apt update",
       "sudo apt install --yes jenkins",
       "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins",
+      # TODO super ugly hack, need to figure out exactly what files that needs permissions
       "sudo chown -R jenkins /efs/jenkins/"
     ]
   }
@@ -302,6 +305,11 @@ resource "aws_instance" "jenkins_master" {
     destination = "/tmp/githubwebhooksecret"
   }
 
+  provisioner "file" {
+    content     = "${var.dnsimple_websites_token}"
+    destination = "/tmp/dnsimple_token"
+  }
+
   # Start jenkins
   provisioner "remote-exec" {
     inline = [
@@ -309,6 +317,7 @@ resource "aws_instance" "jenkins_master" {
       "sudo chown jenkins /tmp/clientsecret",
       "sudo chown jenkins /tmp/userauthtoken",
       "sudo chown jenkins /tmp/githubwebhooksecret",
+      "sudo chown jenkins /tmp/dnsimple_token",
       "sudo cp /home/ubuntu/jenkins.default /etc/default/jenkins",
       "sudo systemctl daemon-reload",
       "sudo systemctl restart jenkins",
