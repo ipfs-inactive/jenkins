@@ -6,6 +6,8 @@ variable "dnsimple_account" {}
 variable "dnsimple_domain" {}
 variable "dnsimple_subdomain" {}
 
+variable "dnsimple_websites_token" {}
+
 variable "windows_admin_password" {}
 
 variable "swarm_version" {}
@@ -107,8 +109,14 @@ provider "dnsimple" {
 
 resource "aws_key_pair" "victor-ssh" {
   # TODO should add more peoples keys as well
+  # https://stackoverflow.com/a/41486527/360186
   key_name   = "victor-ssh-key"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMOBeiZnugxLNgt4sJZPMVzrW3sMpkB2PFv9V4ESW5FZEJPsV0Q09XAfFQL8RxWB0UFMZk43lqImfXoxpLrMyAOa2/sco/2r0uEGtLscYAg6HwCuaXnZeuMwByYIrUSfmZPd7mGo1GYqP5gVfuaKkAVnIplXK5khQL4Ix+aJADDmUdWrBWVeP4KlqfDWM7DCcc8nF9+8C8Wu6uE5a8Zn2c25laML472F3havXysj8lp+VRz2KOSSpVYLOifYajbQH2GaxuynLOny6+vOIVO1LQf5Do+RgWT70sWUdb9S+kjwqlijFUTTvzXuA5cSHReS8h9wtcSRra4qlWpcGr0O0BET1o7CWJXbmmBhtsj+yjR0rR5Xt5/tqEVrHCImdL+ggDmn4wQbRDCRTO6EcnZNiPgdRuve73gguzAFKCINMId3L/ttqOnjn8Bjis046ypKwvSvkan75tJ3/ZpMYSCop51ULdPG8UvdJjH6x75e94S8iH7UYU5c1gFXE+ciukkyyje2ldoaD3zZLUFAWc7XZSZ6iQCvEQCZx32suqgbBzQ4jgoLuxBY7Lpe2sedYGbixBGALgd7jbzG+3NwQeNFOcifbJ/ncPdtpIuYYsKzWtxcJSeOiWqzZWaSkHIqP4TGOgd9GNgedmg/AeeubgDqkN+wI5wy/DynZb0jdtzOZfSQ== victor@niue"
+}
+
+resource "aws_key_pair" "victor-ssh-desktop" {
+  key_name = "victor-ssh-key-desktop"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/R/GBWvIuX1pU7afNEdvkTryI9IdYSQWLqtxjyeOK1ygTXQcUpEKo3HLuUJXF9zdv1OtLI/UgEwp/GpfcUkzJsPmYwaSi4QqZjh8RyPkZpyWgydqdkQ7HR5MGJqeX867IEocamwh34qYLeYiS+hopphFdHJ6oiwVZVYbh/L/CJPPfE38yIBYK+F7hIi5exkNFRMHQhip9RYanhttv1xpnJPb0QC8s3BvIg+386PwHLLtzPpJaGbePQukCOz5NCVjuazn3x3ZaXBl5sx1ys1JDBmhGThLXtetQPjoHmSf96BqxuEwUH5pPhXQnmcCPTmfzF44/h0YPnzLtjauGkETy4SUOWvfFC0tZyfd8BkJxTREklm6L92TUoiV0TuYo5K0BU2Rip9gBXZsB/sH5MoS+r1h2xHA7/j0GsfEWlDO2w4lxhkU0mWZz0g7TrRU24apUgimxgN6Wv6bQqrC0m/WiPNvgGbE8nprcuHTry4JQbjvEoYXcwvIplEEtgR1TfCzY9gMFuPj0lEepUYa9RKlbfIwOHoanteeyT2EUxjJFqTLay5r1Lw5ez/T5hU+Sr7//uUEwDqnSPLPFqh/OgzN5h8FAdHnhkBPDbgUJ8cWgOqnnLrPDVPUFw83wz4khtNGs3VySKUeszeZoPoiDWX878ufOpMGpIYItDCbDXpFmVQ=="
 }
 
 resource "aws_security_group" "jenkins_master" {
@@ -242,7 +250,7 @@ resource "aws_instance" "jenkins_master" {
       "sudo apt-get update",
       "sudo apt-get install --yes nfs-common",
       "sudo mkdir /efs",
-      "sudo chown -R ubuntu /efs",
+      "sudo chown ubuntu /efs",
       "sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${aws_efs_file_system.fs.dns_name}:/ /efs",
     ]
   }
@@ -262,7 +270,8 @@ resource "aws_instance" "jenkins_master" {
       "sudo apt update",
       "sudo apt install --yes jenkins",
       "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins",
-      "sudo chown -R jenkins /efs/jenkins/"
+      # TODO super ugly hack, need to figure out exactly what files that needs permissions
+      "sudo chown jenkins /efs/jenkins/"
     ]
   }
 
@@ -302,6 +311,11 @@ resource "aws_instance" "jenkins_master" {
     destination = "/tmp/githubwebhooksecret"
   }
 
+  provisioner "file" {
+    content     = "${var.dnsimple_websites_token}"
+    destination = "/tmp/dnsimple_token"
+  }
+
   # Start jenkins
   provisioner "remote-exec" {
     inline = [
@@ -309,6 +323,7 @@ resource "aws_instance" "jenkins_master" {
       "sudo chown jenkins /tmp/clientsecret",
       "sudo chown jenkins /tmp/userauthtoken",
       "sudo chown jenkins /tmp/githubwebhooksecret",
+      "sudo chown jenkins /tmp/dnsimple_token",
       "sudo cp /home/ubuntu/jenkins.default /etc/default/jenkins",
       "sudo systemctl daemon-reload",
       "sudo systemctl restart jenkins",
