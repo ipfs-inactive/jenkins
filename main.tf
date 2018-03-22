@@ -263,9 +263,7 @@ resource "aws_instance" "jenkins_master" {
       "echo deb https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list",
       "sudo apt update",
       "sudo apt install --yes jenkins",
-      "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins",
-      # TODO super ugly hack, need to figure out exactly what files that needs permissions
-      "sudo chown -R jenkins /efs/jenkins/"
+      "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins"
     ]
   }
 
