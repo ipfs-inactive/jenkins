@@ -72,14 +72,21 @@ node(label: &apos;linux&apos;) {
 
     stage(&quot;Tests &amp; Coverage&quot;) {
       parallel(
-        &apos;sharness&apos;: { node(label: &apos;linux&apos;) {
+        &apos;go test&apos;: { node(label: &apos;linux&apos;) {
           image.withRun runArgs(), { c -&gt;
             sh &quot;$dexec ${c.id} make -j3 -Otarget test_go_expensive&quot;
           }
         }},
-        &apos;go test&apos;: { node(label: &apos;linux&apos;) {
+        &apos;sharness&apos;: { node(label: &apos;linux&apos;) {
           image.withRun runArgs(), { c1 -&gt;
-            sh &quot;$dexec ${c1.id} make -j3 -Otarget test_sharness_expensive&quot;
+            try {
+              sh &quot;$dexec ${c1.id} make -j3 -Otarget test_sharness_expensive CONTINUE_ON_S_FAILURE=1&quot;
+              sh &quot;docker cp ${c1.id}:/go/src/github.com/ipfs/go-ipfs/test/sharness/test-results/sharness.xml sharness-${env.BUILD_NUMBER}.xml || true&quot;
+            } catch (err) {
+              throw err
+            } finally {
+              junit allowEmptyResults: true, testResults: &apos;sharness-*.xml&apos;
+            }
           }
         }}
       )
