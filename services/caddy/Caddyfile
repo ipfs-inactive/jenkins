@@ -1,5 +1,7 @@
 ci.ipfs.team
-gzip
+gzip {
+     not /sse-gateway
+}
 log /var/log/caddy-access.log
 
 proxy / localhost:8080 {
