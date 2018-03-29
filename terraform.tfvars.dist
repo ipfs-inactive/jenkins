@@ -3,6 +3,10 @@
 aws_access_key = ""
 aws_secret_key = ""
 
+vsphere_user = ""
+vsphere_password = ""
+vsphere_server = ""
+
 dnsimple_token = "x"
 dnsimple_account = "70480"
 dnsimple_domain = "ipfs.team"

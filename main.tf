@@ -1,6 +1,10 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
+variable "vsphere_user" {}
+variable "vsphere_password" {}
+variable "vsphere_server" {}
+
 variable "dnsimple_token" {}
 variable "dnsimple_account" {}
 variable "dnsimple_domain" {}
@@ -47,31 +51,60 @@ provider "dnsimple" {
 
 # TODO experiment in progress for getting automated
 # setup of macOS workers, not currently working
-# provider "vsphere" {
-#   user           = "x"
-#   password       = "x"
-#   vsphere_server = "x"
-# 	allow_unverified_ssl = true
-# }
-# 
-# data "vsphere_datacenter" "dc" {
-#   name = "MacStadium - D"
-# }
-# 
-# data "vsphere_datastore" "datastore" {
-#   name          = "Pure3-1"
-#   datacenter_id = "${data.vsphere_datacenter.dc.id}"
-# }
-# 
-# data "vsphere_resource_pool" "pool" {
-#   name          = "MacPro_Cluster/Resources"
-#   datacenter_id = "${data.vsphere_datacenter.dc.id}"
-# }
-# 
-# data "vsphere_network" "network" {
-#   name          = "Inside-1"
-#   datacenter_id = "${data.vsphere_datacenter.dc.id}"
-# }
+provider "vsphere" {
+  user           = "${var.vsphere_user}"
+  password       = "${var.vsphere_password}"
+  vsphere_server = "${var.vsphere_server}"
+  allow_unverified_ssl = true
+}
+
+data "vsphere_datacenter" "dc" {
+  name = "MacStadium - D"
+}
+
+data "vsphere_datastore" "datastore" {
+  name          = "Pure3-1"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_resource_pool" "pool" {
+  name          = "MacPro_Cluster/Resources"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_network" "network" {
+  name          = "Inside-1"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+data "vsphere_virtual_machine" "template" {
+  name          = "macOSTerraform"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
+}
+
+resource "vsphere_virtual_machine" "vm" {
+  name             = "terraform-test"
+  resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
+  datastore_id     = "${data.vsphere_datastore.datastore.id}"
+
+  num_cpus = 2
+  memory   = 1024
+  guest_id = "darwin15_64Guest"
+
+  network_interface {
+    network_id = "${data.vsphere_network.network.id}"
+  }
+
+  disk {
+    label = "disk0"
+    size  = 20
+  }
+
+  clone {
+    template_uuid = "${data.vsphere_virtual_machine.template.id}"
+  }
+}
+
 # 
 # data "vsphere_virtual_machine" "template" {
 #   name          = "macOS3"
