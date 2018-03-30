@@ -1,10 +1,6 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
-variable "vsphere_user" {}
-variable "vsphere_password" {}
-variable "vsphere_server" {}
-
 variable "dnsimple_token" {}
 variable "dnsimple_account" {}
 variable "dnsimple_domain" {}
@@ -45,100 +41,9 @@ provider "aws" {
 }
 
 provider "dnsimple" {
-  token = "${var.dnsimple_token}"
+  token   = "${var.dnsimple_token}"
   account = "${var.dnsimple_account}"
 }
-
-# TODO experiment in progress for getting automated
-# setup of macOS workers, not currently working
-provider "vsphere" {
-  user           = "${var.vsphere_user}"
-  password       = "${var.vsphere_password}"
-  vsphere_server = "${var.vsphere_server}"
-  allow_unverified_ssl = true
-}
-
-data "vsphere_datacenter" "dc" {
-  name = "MacStadium - D"
-}
-
-data "vsphere_datastore" "datastore" {
-  name          = "Pure3-1"
-  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
-data "vsphere_resource_pool" "pool" {
-  name          = "MacPro_Cluster/Resources"
-  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
-data "vsphere_network" "network" {
-  name          = "Inside-1"
-  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
-data "vsphere_virtual_machine" "template" {
-  name          = "macOSTerraform"
-  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
-resource "vsphere_virtual_machine" "vm" {
-  name             = "terraform-test"
-  resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
-  datastore_id     = "${data.vsphere_datastore.datastore.id}"
-
-  num_cpus = 2
-  memory   = 1024
-  guest_id = "darwin15_64Guest"
-
-  network_interface {
-    network_id = "${data.vsphere_network.network.id}"
-  }
-
-  disk {
-    label = "disk0"
-    size  = 20
-  }
-
-  clone {
-    template_uuid = "${data.vsphere_virtual_machine.template.id}"
-  }
-}
-
-# 
-# data "vsphere_virtual_machine" "template" {
-#   name          = "macOS3"
-#   datacenter_id = "${data.vsphere_datacenter.dc.id}"
-# }
-# 
-# resource "vsphere_virtual_machine" "vm" {
-#   name             = "terraform-test"
-#   resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
-#   datastore_id     = "${data.vsphere_datastore.datastore.id}"
-# 
-#   num_cpus = 2
-#   memory   = 1024
-# 	guest_id = "darwin15_64Guest"
-# 
-# 	wait_for_guest_net_timeout = 0
-# 
-# 	# scsi_type = "${data.vsphere_virtual_machine.template.scsi_type}"
-# 
-#   network_interface {
-#     network_id = "${data.vsphere_network.network.id}"
-#     adapter_type = "${data.vsphere_virtual_machine.template.network_interface_types[0]}"
-#   }
-# 
-#   disk {
-#     name = "terraform-test.vmdk"
-#     size = 20
-#   }
-# 
-# 
-#   clone {
-#     template_uuid = "${data.vsphere_virtual_machine.template.id}"
-#   }
-# }
 
 resource "aws_key_pair" "victor-ssh" {
   # TODO should add more peoples keys as well
@@ -210,32 +115,32 @@ resource "aws_security_group" "jenkins_master" {
 }
 
 module "linux_workers" {
-  source = "./linux-workers"
-  swarm_version = "${var.swarm_version}"
-  jenkins_username = "${var.jenkins_username}"
-  jenkins_password = "${var.jenkins_password}"
-  linux_ami = "${var.linux_ami}"
-  linux_type = "${var.linux_type}"
-  linux_count = "${var.linux_count}"
+  source                      = "./linux-workers"
+  swarm_version               = "${var.swarm_version}"
+  jenkins_username            = "${var.jenkins_username}"
+  jenkins_password            = "${var.jenkins_password}"
+  linux_ami                   = "${var.linux_ami}"
+  linux_type                  = "${var.linux_type}"
+  linux_count                 = "${var.linux_count}"
   linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
-  linux_jenkins_worker_name = "${var.linux_jenkins_worker_name}"
+  linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
   linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"
-  jenkins_master_domain = "${dnsimple_record.jenkins_domain.hostname}"
+  jenkins_master_domain       = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
 module "windows_workers" {
-  source = "./windows-workers"
-  swarm_version = "${var.swarm_version}"
-  jenkins_username = "${var.jenkins_username}"
-  jenkins_password = "${var.jenkins_password}"
-  windows_admin_password = "${var.windows_admin_password}"
-  windows_ami = "${var.windows_ami}"
-  windows_type = "${var.windows_type}"
-  windows_count = "${var.windows_count}"
+  source                        = "./windows-workers"
+  swarm_version                 = "${var.swarm_version}"
+  jenkins_username              = "${var.jenkins_username}"
+  jenkins_password              = "${var.jenkins_password}"
+  windows_admin_password        = "${var.windows_admin_password}"
+  windows_ami                   = "${var.windows_ami}"
+  windows_type                  = "${var.windows_type}"
+  windows_count                 = "${var.windows_count}"
   windows_jenkins_worker_labels = "${var.windows_jenkins_worker_labels}"
-  windows_jenkins_worker_name = "${var.windows_jenkins_worker_name}"
+  windows_jenkins_worker_name   = "${var.windows_jenkins_worker_name}"
   windows_jenkins_worker_fsroot = "${var.windows_jenkins_worker_fsroot}"
-  jenkins_master_domain = "${dnsimple_record.jenkins_domain.hostname}"
+  jenkins_master_domain         = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
 resource "dnsimple_record" "jenkins_domain" {
@@ -259,7 +164,10 @@ resource "aws_instance" "jenkins_master" {
   key_name                    = "victor-ssh-key"
   count                       = "1"
   security_groups             = ["${aws_security_group.jenkins_master.name}"]
-  tags { Name = "jenkins-master" }
+
+  tags {
+    Name = "jenkins-master"
+  }
 
   connection {
     type = "ssh"
@@ -289,14 +197,16 @@ resource "aws_instance" "jenkins_master" {
       "sudo apt install --yes wget htop default-jre build-essential make python-minimal",
       "curl https://get.docker.com | sh",
       "sudo usermod -aG docker ubuntu",
+
       # Prevent jenkins to start by itself
       "echo exit 101 | sudo tee /usr/sbin/policy-rc.d",
+
       "sudo chmod +x /usr/sbin/policy-rc.d",
       "wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -",
       "echo deb https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list",
       "sudo apt update",
       "sudo apt install --yes jenkins",
-      "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins"
+      "sudo rsync -av --progress --update /home/ubuntu/jenkins /efs/jenkins",
     ]
   }
 
@@ -305,6 +215,7 @@ resource "aws_instance" "jenkins_master" {
     source      = "services/caddy/Caddyfile"
     destination = "/home/ubuntu/Caddyfile"
   }
+
   provisioner "file" {
     source      = "services/caddy/caddy.service"
     destination = "/tmp/caddy.service"
@@ -369,7 +280,7 @@ resource "aws_instance" "jenkins_master" {
       "sudo mv /tmp/caddy.service /etc/systemd/system/caddy.service",
       "sudo systemctl daemon-reload",
       "sudo systemctl start caddy",
-      "echo caddy running"
+      "echo caddy running",
     ]
   }
 
