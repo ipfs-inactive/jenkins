@@ -1,6 +1,10 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
 
+variable "vsphere_user" {}
+variable "vsphere_password" {}
+variable "vsphere_server" {}
+
 variable "dnsimple_token" {}
 variable "dnsimple_account" {}
 variable "dnsimple_domain" {}
@@ -29,6 +33,8 @@ variable "windows_jenkins_worker_labels" {}
 variable "windows_jenkins_worker_name" {}
 variable "windows_jenkins_worker_fsroot" {}
 
+variable "macos_count" {}
+
 variable "jenkins_master_auth_client_id" {}
 variable "jenkins_master_auth_client_secret" {}
 variable "jenkins_master_immutablejenkins_auth_token" {}
@@ -43,6 +49,13 @@ provider "aws" {
 provider "dnsimple" {
   token   = "${var.dnsimple_token}"
   account = "${var.dnsimple_account}"
+}
+
+provider "vsphere" {
+  user                 = "${var.vsphere_user}"
+  password             = "${var.vsphere_password}"
+  vsphere_server       = "${var.vsphere_server}"
+  allow_unverified_ssl = true
 }
 
 resource "aws_key_pair" "victor-ssh" {
@@ -141,6 +154,16 @@ module "windows_workers" {
   windows_jenkins_worker_name   = "${var.windows_jenkins_worker_name}"
   windows_jenkins_worker_fsroot = "${var.windows_jenkins_worker_fsroot}"
   jenkins_master_domain         = "${dnsimple_record.jenkins_domain.hostname}"
+}
+
+module "macos_workers" {
+  source           = "./macos-workers"
+  vsphere_user     = "${var.vsphere_user}"
+  vsphere_password = "${var.vsphere_password}"
+  vsphere_server   = "${var.vsphere_server}"
+  jenkins_username = "${var.jenkins_username}"
+  jenkins_password = "${var.jenkins_password}"
+  macos_count      = "${var.macos_count}"
 }
 
 resource "dnsimple_record" "jenkins_domain" {

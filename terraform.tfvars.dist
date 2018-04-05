@@ -47,3 +47,6 @@ windows_jenkins_worker_labels = "windows"
 windows_jenkins_worker_name = "aws-windows"
 # escaping with \ because of Terraform
 windows_jenkins_worker_fsroot = "c:\\jenkins"
+
+# macOS
+macos_count = 6
