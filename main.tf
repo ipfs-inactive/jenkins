@@ -323,3 +323,7 @@ output "linux_ips" {
 output "windows_ips" {
   value = "${module.windows_workers.ips}"
 }
+
+output "macos_ips" {
+  value = "${module.macos_workers.ips}"
+}

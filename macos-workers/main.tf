@@ -82,9 +82,9 @@ resource "vsphere_virtual_machine" "vm" {
 
   connection {
     # TODO these files have to exists before running `terraform apply`
-    # `touch host-ip-{0,1,2,3,4,5,6}` creates them for you
+    # `touch macos-workers/host-ip-{0,1,2,3,4,5}` creates them for you
     # Ref: https://github.com/hashicorp/terraform/issues/6460
-    host = "${file(format("%s%v", "${path.module}/host-ip-", count.index))}"
+    host = "${trimspace(file(format("%s%v", "${path.module}/host-ip-", count.index)))}"
 
     type = "ssh"
     user = "user"
