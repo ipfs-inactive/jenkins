@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.jenkins.swarm</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>java</string>
+      <string>-jar</string>
+      <string>/Users/user/swarm-client-3.7.jar</string>
+      <string>-master</string>
+      <string>https://ci.ipfs.team/</string>
+      <string>-password</string>
+      <string>${password}</string>
+      <string>-username</string>
+      <string>${username}</string>
+      <string>-tunnel</string>
+      <string>ci.ipfs.team:50000</string>
+      <string>-labels</string>
+      <string>macos</string>
+      <string>-name</string>
+      <string>macstadium-macos-tf</string>
+      <string>-fsroot</string>
+      <string>/var/jenkins</string>
+      <string>-executors</string>
+      <string>1</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardInPath</key>
+    <string>/tmp/swarm.stdin</string>
+    <key>StandardOutPath</key>
+    <string>/tmp/swarm.stdout</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/swarm.stderr</string>
+    <key>KeepAlive</key>
+    <true/>
+  </dict>
+</plist>
