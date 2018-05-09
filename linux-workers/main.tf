@@ -62,7 +62,10 @@ resource "aws_instance" "linux" {
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
   count                       = "${terraform.workspace == "default" ? var.linux_count : 1}"
-  tags { Name = "worker-linux" }
+
+  tags {
+    Name = "worker-linux"
+  }
 
   connection {
     type = "ssh"
@@ -70,7 +73,7 @@ resource "aws_instance" "linux" {
   }
 
   provisioner "file" {
-    source     = "services/ipfs/ipfs.service"
+    source      = "services/ipfs/ipfs.service"
     destination = "/tmp/ipfs.service"
   }
 
@@ -85,7 +88,7 @@ resource "aws_instance" "linux" {
       "tar xfv go-ipfs_v0.4.13_linux-amd64.tar.gz",
       "cd go-ipfs && sudo ./install.sh",
       "sudo mv /tmp/ipfs.service /etc/systemd/system/ipfs.service",
-      "sudo systemctl start ipfs"
+      "sudo systemctl start ipfs",
     ]
   }
 

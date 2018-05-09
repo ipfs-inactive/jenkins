@@ -50,7 +50,10 @@ resource "aws_instance" "windows" {
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
   count                       = "${terraform.workspace == "default" ? var.windows_count : 1}"
-  tags { Name = "worker-windows" }
+
+  tags {
+    Name = "worker-windows"
+  }
 
   connection {
     type = "winrm"
