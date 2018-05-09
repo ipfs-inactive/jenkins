@@ -174,6 +174,22 @@ resource "dnsimple_record" "jenkins_domain" {
   ttl    = 1
 }
 
+resource "dnsimple_record" "jenkins_spf" {
+  domain = "${var.dnsimple_domain}"
+  name = "ci"
+  value = "v=spf1 include:mailgun.org ~all"
+  type = "TXT"
+  ttl = 1
+}
+
+resource "dnsimple_record" "jenkins_mx_domainkey" {
+  domain = "${var.dnsimple_domain}"
+  name = "mx._domainkey.ci"
+  value = "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDNLI2U0EsIuGVwRgHFUNThT0SkaGGEVBD4tWGxnP2OHX7e0sWVbjjYIrQEqr96KRMvuztNZjwJ44MjXayqouGEHjBBuV9/RfsEtYWMoGT1/fcGLWaD6qG7qkLJq90MPpxlMbTvtpR8elY10eahADJiGECfmahA19aTXkWljMU+CQIDAQAB"
+  type = "TXT"
+  ttl = 1
+}
+
 resource "aws_efs_file_system" "fs" {
   tags {
     Name = "jenkins-master"
