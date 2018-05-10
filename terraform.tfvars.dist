@@ -37,7 +37,7 @@ linux_type = "m3.large"
 linux_count = 1
 linux_jenkins_worker_labels = "linux"
 linux_jenkins_worker_name = "aws-linux"
-linux_jenkins_worker_fsroot = "/dev/shm/jenkins"
+linux_jenkins_worker_fsroot = "/tmp/jenkins"
 
 # Windows
 windows_ami = "ami-5648ad2c"
