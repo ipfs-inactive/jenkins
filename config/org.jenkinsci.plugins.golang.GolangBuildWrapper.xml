@@ -10,8 +10,18 @@
             <org.jenkinsci.plugins.golang.GolangInstaller>
               <id>1.9.2</id>
             </org.jenkinsci.plugins.golang.GolangInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </org.jenkinsci.plugins.golang.GolangInstallation>
+    <org.jenkinsci.plugins.golang.GolangInstallation>
+      <name>1.10.2</name>
+      <home></home>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
             <org.jenkinsci.plugins.golang.GolangInstaller>
-              <id>1.10</id>
+              <id>1.10.2</id>
             </org.jenkinsci.plugins.golang.GolangInstaller>
           </installers>
         </hudson.tools.InstallSourceProperty>
