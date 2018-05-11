@@ -1,16 +1,33 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<scriptApproval plugin="script-security@1.35">
+<?xml version='1.1' encoding='UTF-8'?>
+<scriptApproval plugin="script-security@1.42">
   <approvedScriptHashes>
     <string>00c2e588c10d5d40f4f1d187de443791eea44723</string>
     <string>13443b6c7f6009cc0a6ddeffd43bdb30e6c0ab0e</string>
     <string>d68c4262823d731637da640578b067cbc8218cbb</string>
   </approvedScriptHashes>
   <approvedSignatures>
+    <string>method hudson.model.Executor interrupt hudson.model.Result jenkins.model.CauseOfInterruption[]</string>
+    <string>method hudson.model.Run getExecutor</string>
+    <string>method hudson.model.Run isBuilding</string>
+    <string>method java.lang.Class isInstance java.lang.Object</string>
+    <string>method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild</string>
+    <string>new jenkins.model.CauseOfInterruption$UserInterruption java.lang.String</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods dump java.lang.Object</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] groovy.lang.IntRange</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] groovy.lang.Range</string>
     <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] java.util.Collection</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.util.Collection java.lang.String</string>
+    <string>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods minus java.lang.String java.lang.Object</string>
   </approvedSignatures>
   <aclApprovedSignatures/>
   <approvedClasspathEntries/>
   <pendingScripts/>
-  <pendingSignatures/>
+  <pendingSignatures>
+    <pendingSignature>
+      <context/>
+      <signature>staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object java.lang.String</signature>
+      <dangerous>true</dangerous>
+    </pendingSignature>
+  </pendingSignatures>
   <pendingClasspathEntries/>
 </scriptApproval>
