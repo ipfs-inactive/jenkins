@@ -20,6 +20,8 @@
         <string>lgierth</string>
         <string>Kubuxu</string>
         <string>ImmutableJenkins</string>
+        <string>magik6k</string>
+        <string>laser</string>
       </adminUserNameList>
       <authenticatedUserReadPermission>false</authenticatedUserReadPermission>
       <useRepositoryPermissions>true</useRepositoryPermissions>
