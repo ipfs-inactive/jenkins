@@ -36,18 +36,18 @@ def String clientSecret
 def String userAuthToken
 def Secret webhookSecret
 try {
-clientID = new File(clientIDPath).text
-clientSecret = new File(clientSecretPath).text
-userAuthToken = new File(userAuthTokenPath).text
-webhookSecret = Secret.fromString(new File(webhookSecretPath).text)
+	clientID = new File(clientIDPath).text
+	clientSecret = new File(clientSecretPath).text
+	userAuthToken = new File(userAuthTokenPath).text
+	webhookSecret = Secret.fromString(new File(webhookSecretPath).text)
 } catch (Exception err) {
-System.out.println(err)
-noSecrets = true
+	System.out.println(err)
+	noSecrets = true
 }
 
 if (noSecrets) {
-System.out.println("--> All credentials already setup")
-return
+	System.out.println("--> All credentials already setup")
+	return
 }
 
 // assert new File(clientIDPath).delete() : "Could not delete Client ID"
@@ -57,47 +57,47 @@ return
 
 System.out.println "--> Saving Github Credentials"
 try {
-SecurityRealm github_realm = new GithubSecurityRealm(
-githubWebUri, githubApiUri, clientID, clientSecret, oauthScopes
-)
+	SecurityRealm github_realm = new GithubSecurityRealm(
+		githubWebUri, githubApiUri, clientID, clientSecret, oauthScopes
+		)
 
-//check for equality, no need to modify the runtime if no settings changed
-if(!github_realm.equals(Jenkins.instance.getSecurityRealm())) {
-Jenkins.instance.setSecurityRealm(github_realm)
-Jenkins.instance.save()
-}
+	//check for equality, no need to modify the runtime if no settings changed
+	if(!github_realm.equals(Jenkins.instance.getSecurityRealm())) {
+		Jenkins.instance.setSecurityRealm(github_realm)
+		Jenkins.instance.save()
+	}
 } catch(Exception err) {
-System.out.println(err)
-System.out.println("Tried setting Github secrets but either already done and we couldnt")
+	System.out.println(err)
+	System.out.println("Tried setting Github secrets but either already done and we couldnt")
 }
 
 System.out.println "--> Creating ImmutableJenkins user"
 try {
-Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(
-CredentialsScope.GLOBAL,
-'immutablejenkins',
-'ImmutableJenkins Github login with auth token',
-'immutablejenkins',
-userAuthToken
-)
-assert SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c) : "Could not add ImmutableJenkins credentials"
+	Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(
+		CredentialsScope.GLOBAL,
+		'immutablejenkins',
+		'ImmutableJenkins Github login with auth token',
+		'immutablejenkins',
+		userAuthToken
+		)
+	assert SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c) : "Could not add ImmutableJenkins credentials"
 } catch(Exception err) {
-System.out.println(err)
-System.out.println("Tried creating ImmutableJenkins but couldn't")
+	System.out.println(err)
+	System.out.println("Tried creating ImmutableJenkins but couldn't")
 }
 
 System.out.println "--> Creating Github Webhook Secret"
 try {
-Credentials c = (Credentials) new StringCredentialsImpl(
-CredentialsScope.GLOBAL,
-'github-webhook-secret',
-'Secret for accepting Github Webhooks',
-webhookSecret,
-)
-assert SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c) : "Could not add secret for Github Webhook"
+	Credentials c = (Credentials) new StringCredentialsImpl(
+		CredentialsScope.GLOBAL,
+		'github-webhook-secret',
+		'Secret for accepting Github Webhooks',
+		webhookSecret,
+		)
+	assert SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c) : "Could not add secret for Github Webhook"
 } catch(Exception err) {
-System.out.println(err)
-System.out.println("Tried setting Webhook Secret but either already done and we couldnt")
+	System.out.println(err)
+	System.out.println("Tried setting Webhook Secret but either already done and we couldnt")
 }
 System.out.println("--> Initial setup done")
 
