@@ -1,0 +1,55 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "swarm_version": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami_filter": {
+      "filters": {
+      "virtualization-type": "hvm",
+      "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+      "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "instance_type": "m4.2xlarge",
+    "ssh_username": "ubuntu",
+    "ami_name": "packer-example-{{timestamp}}"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMOBeiZnugxLNgt4sJZPMVzrW3sMpkB2PFv9V4ESW5FZEJPsV0Q09XAfFQL8RxWB0UFMZk43lqImfXoxpLrMyAOa2/sco/2r0uEGtLscYAg6HwCuaXnZeuMwByYIrUSfmZPd7mGo1GYqP5gVfuaKkAVnIplXK5khQL4Ix+aJADDmUdWrBWVeP4KlqfDWM7DCcc8nF9+8C8Wu6uE5a8Zn2c25laML472F3havXysj8lp+VRz2KOSSpVYLOifYajbQH2GaxuynLOny6+vOIVO1LQf5Do+RgWT70sWUdb9S+kjwqlijFUTTvzXuA5cSHReS8h9wtcSRra4qlWpcGr0O0BET1o7CWJXbmmBhtsj+yjR0rR5Xt5/tqEVrHCImdL+ggDmn4wQbRDCRTO6EcnZNiPgdRuve73gguzAFKCINMId3L/ttqOnjn8Bjis046ypKwvSvkan75tJ3/ZpMYSCop51ULdPG8UvdJjH6x75e94S8iH7UYU5c1gFXE+ciukkyyje2ldoaD3zZLUFAWc7XZSZ6iQCvEQCZx32suqgbBzQ4jgoLuxBY7Lpe2sedYGbixBGALgd7jbzG+3NwQeNFOcifbJ/ncPdtpIuYYsKzWtxcJSeOiWqzZWaSkHIqP4TGOgd9GNgedmg/AeeubgDqkN+wI5wy/DynZb0jdtzOZfSQ== victor@niue > /home/ubuntu/.ssh/authorized_keys"
+    ]
+  }, {
+    "type": "file",
+    "source": "services/ipfs/ipfs.service",
+    "destination": "/tmp/ipfs.service"
+  }, {
+    "type": "shell",
+    "inline": [
+      "wget https://dist.ipfs.io/go-ipfs/v0.4.13/go-ipfs_v0.4.13_linux-amd64.tar.gz",
+      "tar xfv go-ipfs_v0.4.13_linux-amd64.tar.gz",
+      "cd go-ipfs && sudo ./install.sh",
+      "sudo mv /tmp/ipfs.service /etc/systemd/system/ipfs.service",
+      "sudo systemctl start ipfs"
+    ]
+  }, {
+    "type": "shell",
+    "inline": [
+      "wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -",
+      "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list",
+      "sudo apt update",
+      "sudo apt install --yes wget htop default-jre google-chrome-stable xvfb python python3 build-essential make rpm",
+      "curl https://get.docker.com | sh",
+      "sudo usermod -aG docker ubuntu",
+      "cd /home/ubuntu && wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/{{user `swarm_version`}}/swarm-client-{{user `swarm_version`}}.jar"
+    ]
+  }]
+}

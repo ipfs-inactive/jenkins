@@ -127,6 +127,19 @@ resource "aws_security_group" "jenkins_master" {
   }
 }
 
+module "packer_linux_workers" {
+  source                      = "./packer-linux-workers"
+  swarm_version               = "${var.swarm_version}"
+  jenkins_username            = "${var.jenkins_username}"
+  jenkins_password            = "${var.jenkins_password}"
+  linux_type                  = "${var.linux_type}"
+  linux_count                 = "5"
+  linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
+  linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
+  linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"
+  jenkins_master_domain       = "${dnsimple_record.jenkins_domain.hostname}"
+}
+
 module "linux_workers" {
   source                      = "./linux-workers"
   swarm_version               = "${var.swarm_version}"
@@ -330,6 +343,10 @@ resource "aws_instance" "jenkins_master" {
 
 output "jenkins_masters" {
   value = "${aws_instance.jenkins_master.*.public_ip}"
+}
+
+output "packer_linux_ips" {
+  value = "${module.packer_linux_workers.ips}"
 }
 
 output "linux_ips" {
