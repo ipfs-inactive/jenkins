@@ -161,7 +161,7 @@ module "packer_linux_workers" {
   jenkins_username            = "${var.jenkins_username}"
   jenkins_password            = "${var.jenkins_password}"
   linux_type                  = "${var.linux_type}"
-  linux_count                 = "1"
+  linux_count                 = "5"
   linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
   linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
   linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"

@@ -29,7 +29,7 @@ resource "aws_instance" "linux" {
   # TODO make this come from the generated security group
   security_groups             = ["jenkins_linux"]
   # TODO make this come from a variable
-  ami                         = "ami-0238869fb99837288"
+  ami                         = "ami-0276b129e8cd261c5"
   instance_type               = "${var.linux_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
@@ -55,6 +55,12 @@ resource "aws_instance" "linux" {
       "sudo mv /home/ubuntu/swarm.service /etc/systemd/system/swarm.service",
       "sudo systemctl start swarm",
       "echo service started",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl start node_exporter"
     ]
   }
 
