@@ -18,7 +18,7 @@ resource "aws_instance" "windows" {
   instance_type               = "${var.windows_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
-  count                       = "1"
+  count                       = "2"
 
   tags {
     Name = "worker-windows"
