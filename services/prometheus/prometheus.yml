@@ -12,3 +12,6 @@ scrape_configs:
   - job_name: 'jenkins-windows-workers'
     static_configs:
     - targets: [${windows_hosts}]
+  - job_name: 'jenkins-macos-workers'
+    static_configs:
+    - targets: [${macos_hosts}]
