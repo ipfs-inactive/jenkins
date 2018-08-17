@@ -182,6 +182,19 @@ module "linux_workers" {
   jenkins_master_domain       = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
+module "packer_windows_workers" {
+  source                        = "./packer-windows-workers"
+  swarm_version                 = "${var.swarm_version}"
+  jenkins_username              = "${var.jenkins_username}"
+  jenkins_password              = "${var.jenkins_password}"
+  windows_admin_password        = "${var.windows_admin_password}"
+  windows_type                  = "${var.windows_type}"
+  windows_jenkins_worker_labels = "${var.windows_jenkins_worker_labels}"
+  windows_jenkins_worker_name   = "${var.windows_jenkins_worker_name}"
+  windows_jenkins_worker_fsroot = "${var.windows_jenkins_worker_fsroot}"
+  jenkins_master_domain         = "${dnsimple_record.jenkins_domain.hostname}"
+}
+
 module "windows_workers" {
   source                        = "./windows-workers"
   swarm_version                 = "${var.swarm_version}"
@@ -457,6 +470,10 @@ output "linux_ips" {
 
 output "windows_ips" {
   value = "${module.windows_workers.ips}"
+}
+
+output "packer_windows_ips" {
+  value = "${module.packer_windows_workers.ips}"
 }
 
 output "macos_ips" {
