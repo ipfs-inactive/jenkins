@@ -1,4 +1,4 @@
-## MacStadium + Jenkins Workers
+# MacStadium + Jenkins Workers
 
 The current setup for macOS workers uses MacStadium as a platform to deploy them
 to. They offer support for vSphere which we use together with Terraform's vSphere
@@ -21,3 +21,8 @@ the Terraform configuration should reference the new template, and instances rec
 - DHCP server manually setup and configured to give the macOS instances IP addresses.
 This is currently a Debian server running isc-dhcp-server, with the IP allocation
 received defined in the default configuration
+
+## Making changes to existing instances
+
+This step currently requires a bit of manual steps, due to not having finding
+a fully automated solution for managing macOS VMs on MacStadium.

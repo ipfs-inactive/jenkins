@@ -104,5 +104,5 @@ resource "vsphere_virtual_machine" "vm" {
 }
 
 output "ips" {
-  value = "${vsphere_virtual_machine.vm.*.guest_ip_addresses}"
+  value = "${vsphere_virtual_machine.vm.*.default_ip_address}"
 }
