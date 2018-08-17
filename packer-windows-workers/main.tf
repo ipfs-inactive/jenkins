@@ -14,7 +14,7 @@ variable "jenkins_master_domain" {}
 
 resource "aws_instance" "windows" {
   security_groups             = ["jenkins_windows"]
-  ami                         = "ami-0c2925bfd6882be83"
+  ami                         = "ami-0ec85d6b6e45db087"
   instance_type               = "${var.windows_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
