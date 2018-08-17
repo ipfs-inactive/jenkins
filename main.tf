@@ -289,6 +289,7 @@ data "template_file" "prometheus_config" {
 
   vars {
     linux_hosts = "${join(",", formatlist("'%s:9100'", module.packer_linux_workers.ips))}"
+    windows_hosts = "${join(",", formatlist("'%s:9182'", module.packer_windows_workers.ips))}"
   }
 }
 

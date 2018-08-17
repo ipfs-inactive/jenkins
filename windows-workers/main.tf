@@ -26,6 +26,14 @@ resource "aws_security_group" "jenkins_windows" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Prometheus
+  ingress {
+    from_port   = 9182
+    to_port     = 9182
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # RDP
   ingress {
     from_port   = 3389
