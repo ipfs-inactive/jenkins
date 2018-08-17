@@ -20,7 +20,7 @@
     },
     "instance_type": "m4.2xlarge",
     "ssh_username": "ubuntu",
-    "ami_name": "packer-example-{{timestamp}}"
+    "ami_name": "jenkins-linux-worker-{{timestamp}}"
   }],
   "provisioners": [{
     "type": "shell",
