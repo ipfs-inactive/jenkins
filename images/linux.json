@@ -2,7 +2,7 @@
   "variables": {
     "aws_access_key": "",
     "aws_secret_key": "",
-    "swarm_version": ""
+    "swarm_version": "3.7"
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -20,7 +20,7 @@
     },
     "instance_type": "m4.2xlarge",
     "ssh_username": "ubuntu",
-    "ami_name": "packer-example-{{timestamp}}"
+    "ami_name": "jenkins-linux-worker-{{timestamp}}"
   }],
   "provisioners": [{
     "type": "shell",
@@ -50,6 +50,19 @@
       "curl https://get.docker.com | sh",
       "sudo usermod -aG docker ubuntu",
       "cd /home/ubuntu && wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/{{user `swarm_version`}}/swarm-client-{{user `swarm_version`}}.jar"
+    ]
+  }, {
+    "type": "file",
+    "source": "services/node_exporter/node_exporter.service",
+    "destination": "/tmp/node_exporter.service"
+  }, {
+    "type": "shell",
+    "inline": [
+      "wget https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz",
+      "tar xfv node_exporter-0.16.0.linux-amd64.tar.gz",
+      "sudo mv node_exporter-0.16.0.linux-amd64/node_exporter /usr/bin/",
+      "sudo mv /tmp/node_exporter.service /etc/systemd/system/node_exporter.service",
+      "sudo systemctl start node_exporter"
     ]
   }]
 }

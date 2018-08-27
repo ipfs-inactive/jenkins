@@ -63,6 +63,34 @@ resource "aws_key_pair" "victor-ssh" {
   key_name   = "victor-ssh-key"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMOBeiZnugxLNgt4sJZPMVzrW3sMpkB2PFv9V4ESW5FZEJPsV0Q09XAfFQL8RxWB0UFMZk43lqImfXoxpLrMyAOa2/sco/2r0uEGtLscYAg6HwCuaXnZeuMwByYIrUSfmZPd7mGo1GYqP5gVfuaKkAVnIplXK5khQL4Ix+aJADDmUdWrBWVeP4KlqfDWM7DCcc8nF9+8C8Wu6uE5a8Zn2c25laML472F3havXysj8lp+VRz2KOSSpVYLOifYajbQH2GaxuynLOny6+vOIVO1LQf5Do+RgWT70sWUdb9S+kjwqlijFUTTvzXuA5cSHReS8h9wtcSRra4qlWpcGr0O0BET1o7CWJXbmmBhtsj+yjR0rR5Xt5/tqEVrHCImdL+ggDmn4wQbRDCRTO6EcnZNiPgdRuve73gguzAFKCINMId3L/ttqOnjn8Bjis046ypKwvSvkan75tJ3/ZpMYSCop51ULdPG8UvdJjH6x75e94S8iH7UYU5c1gFXE+ciukkyyje2ldoaD3zZLUFAWc7XZSZ6iQCvEQCZx32suqgbBzQ4jgoLuxBY7Lpe2sedYGbixBGALgd7jbzG+3NwQeNFOcifbJ/ncPdtpIuYYsKzWtxcJSeOiWqzZWaSkHIqP4TGOgd9GNgedmg/AeeubgDqkN+wI5wy/DynZb0jdtzOZfSQ== victor@niue"
 }
+resource "aws_security_group" "prometheus" {
+  name        = "prometheus"
+  description = "Allow inbound metrics requests/everything outbound"
+
+  # Prometheus
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # SSH
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # All allowed outbound
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 resource "aws_security_group" "jenkins_master" {
   name        = "jenkins_master"
@@ -154,6 +182,19 @@ module "linux_workers" {
   jenkins_master_domain       = "${dnsimple_record.jenkins_domain.hostname}"
 }
 
+module "packer_windows_workers" {
+  source                        = "./packer-windows-workers"
+  swarm_version                 = "${var.swarm_version}"
+  jenkins_username              = "${var.jenkins_username}"
+  jenkins_password              = "${var.jenkins_password}"
+  windows_admin_password        = "${var.windows_admin_password}"
+  windows_type                  = "${var.windows_type}"
+  windows_jenkins_worker_labels = "${var.windows_jenkins_worker_labels}"
+  windows_jenkins_worker_name   = "${var.windows_jenkins_worker_name}"
+  windows_jenkins_worker_fsroot = "${var.windows_jenkins_worker_fsroot}"
+  jenkins_master_domain         = "${dnsimple_record.jenkins_domain.hostname}"
+}
+
 module "windows_workers" {
   source                        = "./windows-workers"
   swarm_version                 = "${var.swarm_version}"
@@ -184,7 +225,15 @@ resource "dnsimple_record" "jenkins_domain" {
   name   = "${terraform.workspace == "default" ? var.dnsimple_subdomain : join(".", list(terraform.workspace, var.dnsimple_subdomain))}"
   value  = "${aws_instance.jenkins_master.0.public_ip}"
   type   = "A"
-  ttl    = 1
+  ttl    = 60
+}
+
+resource "dnsimple_record" "prometheus_domain" {
+  domain = "${var.dnsimple_domain}"
+  name   = "prometheus"
+  value  = "${aws_instance.prometheus.public_ip}"
+  type   = "A"
+  ttl    = 60
 }
 
 resource "dnsimple_record" "jenkins_spf" {
@@ -206,6 +255,70 @@ resource "dnsimple_record" "jenkins_mx_domainkey" {
 resource "aws_efs_file_system" "fs" {
   tags {
     Name = "jenkins-master"
+  }
+}
+
+resource "aws_instance" "prometheus" {
+  ami                         = "${var.linux_ami}"
+  instance_type               = "m4.large"
+  associate_public_ip_address = true
+  key_name                    = "victor-ssh-key"
+  count                       = "1"
+  security_groups             = ["${aws_security_group.prometheus.name}"]
+
+  tags {
+    Name = "jenkins-prometheus"
+  }
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "curl https://get.docker.com | sh",
+      "sudo usermod -aG docker ubuntu",
+    ]
+  }
+}
+
+data "template_file" "prometheus_config" {
+  template = "${file("services/prometheus/prometheus.yml")}"
+
+  vars {
+    linux_hosts = "${join(",", formatlist("'%s:9100'", module.packer_linux_workers.ips))}"
+    windows_hosts = "${join(",", formatlist("'%s:9182'", module.packer_windows_workers.ips))}"
+    macos_hosts = "${join(",", formatlist("'%s:9100'", module.macos_workers.ips))}"
+  }
+}
+
+resource "null_resource" "prometheus" {
+  count = "1"
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    host = "${aws_instance.prometheus.public_ip}"
+  }
+
+  triggers {
+    config = "${sha1(data.template_file.prometheus_config.rendered)}"
+    hosts = "${sha1(join(",", aws_instance.prometheus.*.public_ip))}"
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.prometheus_config.rendered}"
+    destination = "/home/ubuntu/prometheus.yml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "docker stop prometheus || true",
+      "docker rm prometheus || true",
+      "docker run --name prometheus -v /home/ubuntu/prometheus.yml:/etc/prometheus/prometheus.yml -d -p 0.0.0.0:9090:9090 quay.io/prometheus/prometheus"
+    ]
   }
 }
 
@@ -345,6 +458,10 @@ output "jenkins_masters" {
   value = "${aws_instance.jenkins_master.*.public_ip}"
 }
 
+output "prometheus" {
+  value = "${aws_instance.prometheus.*.public_ip}"
+}
+
 output "packer_linux_ips" {
   value = "${module.packer_linux_workers.ips}"
 }
@@ -355,6 +472,10 @@ output "linux_ips" {
 
 output "windows_ips" {
   value = "${module.windows_workers.ips}"
+}
+
+output "packer_windows_ips" {
+  value = "${module.packer_windows_workers.ips}"
 }
 
 output "macos_ips" {
