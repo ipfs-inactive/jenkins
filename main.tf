@@ -40,6 +40,15 @@ variable "jenkins_master_auth_client_secret" {}
 variable "jenkins_master_immutablejenkins_auth_token" {}
 variable "jenkins_master_github_webhook_secret" {}
 
+terraform {
+  backend "s3" {
+    bucket = "jenkins-tf-sync"
+    key = "production.tfstate"
+    region = "eu-west-2"
+    encrypt = true
+  }
+}
+
 provider "aws" {
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
@@ -56,6 +65,7 @@ provider "vsphere" {
   password             = "${var.vsphere_password}"
   vsphere_server       = "${var.vsphere_server}"
   allow_unverified_ssl = true
+  version = "1.4.0"
 }
 
 resource "aws_key_pair" "victor-ssh" {
@@ -161,7 +171,7 @@ module "packer_linux_workers" {
   jenkins_username            = "${var.jenkins_username}"
   jenkins_password            = "${var.jenkins_password}"
   linux_type                  = "${var.linux_type}"
-  linux_count                 = "5"
+  linux_count                 = "7"
   linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
   linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
   linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"
