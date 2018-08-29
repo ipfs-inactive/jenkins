@@ -22,6 +22,7 @@
         <string>ImmutableJenkins</string>
         <string>magik6k</string>
         <string>laser</string>
+        <string>mburns</string>
       </adminUserNameList>
       <authenticatedUserReadPermission>false</authenticatedUserReadPermission>
       <useRepositoryPermissions>true</useRepositoryPermissions>
