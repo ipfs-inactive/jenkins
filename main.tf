@@ -170,19 +170,6 @@ module "packer_linux_workers" {
   swarm_version               = "${var.swarm_version}"
   jenkins_username            = "${var.jenkins_username}"
   jenkins_password            = "${var.jenkins_password}"
-  linux_type                  = "${var.linux_type}"
-  linux_count                 = "7"
-  linux_jenkins_worker_labels = "${var.linux_jenkins_worker_labels}"
-  linux_jenkins_worker_name   = "${var.linux_jenkins_worker_name}"
-  linux_jenkins_worker_fsroot = "${var.linux_jenkins_worker_fsroot}"
-  jenkins_master_domain       = "${dnsimple_record.jenkins_domain.hostname}"
-}
-
-module "linux_workers" {
-  source                      = "./linux-workers"
-  swarm_version               = "${var.swarm_version}"
-  jenkins_username            = "${var.jenkins_username}"
-  jenkins_password            = "${var.jenkins_password}"
   linux_ami                   = "${var.linux_ami}"
   linux_type                  = "${var.linux_type}"
   linux_count                 = "${var.linux_count}"
@@ -269,7 +256,7 @@ resource "aws_efs_file_system" "fs" {
 }
 
 resource "aws_instance" "prometheus" {
-  ami                         = "${var.linux_ami}"
+  ami                         = "ami-aa2ea6d0"
   instance_type               = "m4.large"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
@@ -333,7 +320,7 @@ resource "null_resource" "prometheus" {
 }
 
 resource "aws_instance" "jenkins_master" {
-  ami                         = "${var.linux_ami}"
+  ami                         = "ami-aa2ea6d0"
   instance_type               = "m4.xlarge"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
@@ -474,10 +461,6 @@ output "prometheus" {
 
 output "packer_linux_ips" {
   value = "${module.packer_linux_workers.ips}"
-}
-
-output "linux_ips" {
-  value = "${module.linux_workers.ips}"
 }
 
 output "windows_ips" {
