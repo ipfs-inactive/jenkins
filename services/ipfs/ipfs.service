@@ -3,6 +3,7 @@ Description=IPFS
 
 [Service]
 ExecStart=/usr/local/bin/ipfs daemon --init
+User=ubuntu
 Environment=IPFS_PATH=/home/ubuntu/.ipfs
 Restart=on-failure
 RestartSec=10

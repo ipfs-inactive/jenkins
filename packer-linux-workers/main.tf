@@ -4,11 +4,49 @@ variable "jenkins_username" {}
 variable "jenkins_password" {}
 variable "jenkins_master_domain" {}
 
+variable "linux_ami" {}
 variable "linux_type" {}
 variable "linux_count" {}
 variable "linux_jenkins_worker_labels" {}
 variable "linux_jenkins_worker_name" {}
 variable "linux_jenkins_worker_fsroot" {}
+
+resource "aws_security_group" "jenkins_linux" {
+  name        = "jenkins_linux"
+  description = "Allow inbound ssh traffic/everything outbound"
+
+  # SSH
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # IPFS swarm
+  ingress {
+    from_port   = 4001
+    to_port     = 4001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Prometheus
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # All allowed outbound
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 data "template_file" "jenkins_worker_service" {
   template = "${file("services/swarm/swarm.service")}"
@@ -26,10 +64,9 @@ data "template_file" "jenkins_worker_service" {
 }
 
 resource "aws_instance" "linux" {
-  # TODO make this come from the generated security group
-  security_groups             = ["jenkins_linux"]
+  security_groups             = ["${aws_security_group.jenkins_linux.name}"]
   # TODO make this come from a variable
-  ami                         = "ami-0276b129e8cd261c5"
+  ami                         = "${var.linux_ami}"
   instance_type               = "${var.linux_type}"
   associate_public_ip_address = true
   key_name                    = "victor-ssh-key"
@@ -52,15 +89,16 @@ resource "aws_instance" "linux" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo mv /home/ubuntu/swarm.service /etc/systemd/system/swarm.service",
-      "sudo systemctl start swarm",
-      "echo service started",
+      "sudo mv /home/ubuntu/swarm.service /etc/systemd/system/swarm.service"
     ]
   }
 
   provisioner "remote-exec" {
     inline = [
-      "sudo systemctl start node_exporter"
+      "sudo systemctl start swarm",
+      "sudo systemctl start node_exporter",
+      "sudo systemctl start ipfs",
+      "echo all services started"
     ]
   }
 
