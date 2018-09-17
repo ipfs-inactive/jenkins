@@ -156,6 +156,15 @@ resource "aws_security_group" "jenkins_master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # IPFS Swarm
+  ingress {
+    description = "IPFS Swarm"
+    from_port   = 4001
+    to_port     = 4001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # All allowed outbound
   egress {
     from_port   = 0
