@@ -288,6 +288,10 @@ resource "aws_instance" "prometheus" {
       "sudo usermod -aG docker ubuntu",
     ]
   }
+
+  root_block_device {
+    volume_size = "128"
+  }
 }
 
 data "template_file" "prometheus_config" {
