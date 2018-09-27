@@ -37,8 +37,7 @@
       "wget https://dist.ipfs.io/go-ipfs/v0.4.13/go-ipfs_v0.4.13_linux-amd64.tar.gz",
       "tar xfv go-ipfs_v0.4.13_linux-amd64.tar.gz",
       "cd go-ipfs && sudo ./install.sh",
-      "sudo mv /tmp/ipfs.service /etc/systemd/system/ipfs.service",
-      "sudo systemctl start ipfs"
+      "sudo mv /tmp/ipfs.service /etc/systemd/system/ipfs.service"
     ]
   }, {
     "type": "shell",
