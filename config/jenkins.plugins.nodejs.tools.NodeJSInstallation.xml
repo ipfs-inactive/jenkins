@@ -171,6 +171,19 @@
       </properties>
     </jenkins.plugins.nodejs.tools.NodeJSInstallation>
     <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>8.12.0</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>8.12.0</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
       <name>9.0.0</name>
       <properties>
         <hudson.tools.InstallSourceProperty>
@@ -424,6 +437,19 @@
           <installers>
             <jenkins.plugins.nodejs.tools.NodeJSInstaller>
               <id>10.4.1</id>
+              <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
+            </jenkins.plugins.nodejs.tools.NodeJSInstaller>
+          </installers>
+        </hudson.tools.InstallSourceProperty>
+      </properties>
+    </jenkins.plugins.nodejs.tools.NodeJSInstallation>
+    <jenkins.plugins.nodejs.tools.NodeJSInstallation>
+      <name>10.11.0</name>
+      <properties>
+        <hudson.tools.InstallSourceProperty>
+          <installers>
+            <jenkins.plugins.nodejs.tools.NodeJSInstaller>
+              <id>10.11.0</id>
               <npmPackagesRefreshHours>72</npmPackagesRefreshHours>
             </jenkins.plugins.nodejs.tools.NodeJSInstaller>
           </installers>
