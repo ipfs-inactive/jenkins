@@ -34,8 +34,14 @@ resource "aws_instance" "windows" {
     timeout = "30m"
   }
 
+  provisioner "file" {
+    source = "packer-windows-workers/resize.diskpart"
+    destination = "C:\\Users\\Administrator\\resize.diskpart"
+  }
+
   provisioner "remote-exec" {
     inline = [
+      "diskpart /s C:\\Users\\Administrator\\resize.diskpart",
       "nssm install swarm java -jar C:\\Users\\Administrator\\swarm-client-${var.swarm_version}.jar -master http://${var.jenkins_master_domain}:8080 -password ${var.jenkins_password} -username ${var.jenkins_username} -tunnel ${var.jenkins_master_domain}:50000 -labels ${var.windows_jenkins_worker_labels} -name ${var.windows_jenkins_worker_name} -fsroot ${var.windows_jenkins_worker_fsroot} -mode exclusive -executors 1",
       "nssm start swarm",
     ]
