@@ -45,7 +45,7 @@
       "wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -",
       "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list",
       "sudo apt update",
-      "sudo apt install --yes wget htop default-jre google-chrome-stable xvfb python python3 build-essential make rpm",
+      "sudo apt install --yes wget htop default-jre google-chrome-stable xvfb python python3 build-essential make rpm jq",
       "curl https://get.docker.com | sh",
       "sudo usermod -aG docker ubuntu",
       "cd /home/ubuntu && wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/{{user `swarm_version`}}/swarm-client-{{user `swarm_version`}}.jar"
